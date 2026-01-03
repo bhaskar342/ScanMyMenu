@@ -21,7 +21,12 @@ const menuItemSchema = new mongoose.Schema({
   },
   description: { type: String },
   basePrice: { type: Number },
-  category: { type: mongoose.Schema.Types.ObjectId, ref: "FoodCategory", index:true },
+  discountedPrice: { type: Number },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "FoodCategory",
+    index: true,
+  },
   variants: [VariantSchema],
   isVeg: {
     type: Boolean,

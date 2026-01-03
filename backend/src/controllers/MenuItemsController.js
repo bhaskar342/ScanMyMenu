@@ -20,6 +20,7 @@ exports.postAddMenuItems = async (req, res) => {
       name,
       description,
       basePrice,
+      discountedPrice,
       category,
       variants,
       isVeg,
@@ -98,6 +99,7 @@ exports.postAddMenuItems = async (req, res) => {
       basePrice: basePrice ? Number(basePrice) : null,
       category,
       variants,
+      discountedPrice,
       isVeg: isVeg === "false" ? false : true,
       isAvailable: isAvailable === "false" ? false : true,
       isBestSeller: isBestSeller === "true" || false,
@@ -180,6 +182,7 @@ exports.updateMenuItem = async (req, res) => {
       description,
       basePrice,
       category,
+      discountedPrice,
       variants,
       isVeg,
       isAvailable,
@@ -201,9 +204,9 @@ exports.updateMenuItem = async (req, res) => {
     if (name) item.name = name;
     if (description) item.description = description;
     if (basePrice) item.basePrice = Number(basePrice);
+    if (discountedPrice) item.discountedPrice = Number(discountedPrice);
     if (variants) item.variants = variants;
     if (category) item.category = category;
-
     if (isVeg !== undefined) item.isVeg = isVeg === "true";
     if (isAvailable !== undefined) item.isAvailable = isAvailable === "true";
     if (isBestSeller !== undefined) item.isBestSeller = isBestSeller === "true";

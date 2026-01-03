@@ -1,17 +1,16 @@
 import { useContext, useState, useMemo } from "react";
 import Loader from "../../components/Loader";
 import { PublicContext } from "../../context/PublicContext";
-import { FaUtensils, FaCircle } from "react-icons/fa";
-import { Triangle, MapPin, Phone } from "lucide-react";
 import "../../index.css";
 import FoodFilterToggles from "../../components/FoodFilterToggles";
+import { Triangle, Search, Loader2, Leaf, Drumstick, Star } from "lucide-react";
 
 export default function CustomerMenu() {
   const [filter, setFilter] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const { isLoading, data, error } = useContext(PublicContext);
-  const { restaurant = {}, table = {}, menu = [] } = data || {};
+  const { menu = [] } = data || {};
 
   const filteredMenu = useMemo(() => {
     return menu
@@ -37,220 +36,200 @@ export default function CustomerMenu() {
       .filter((category) => category.items.length > 0);
   }, [menu, categoryFilter, filter, searchQuery]);
 
+  console.log("Filtered Menu:", filteredMenu);
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50/30 pb-28">
+    <div className="min-h-screen mb-4 bg-gradient-to-br from-slate-50 via-white to-emerald-50/20">
       {isLoading && (
         <div className="flex justify-center items-center min-h-screen">
-          <Loader />
+          <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
         </div>
       )}
 
       {!isLoading && error && (
-        <div className="text-center text-red-600 mt-10 font-semibold">
+        <div className="text-center text-red-600 mt-10 font-semibold px-4">
           {error}
         </div>
       )}
 
       {!isLoading && !error && (
-        <>
-          {/* HEADER */}
-          <header className="bg-white shadow-lg sticky top-0 z-30">
-            <div className="bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 text-white px-3 sm:px-6 py-3">
-              <div className="max-w-6xl mx-auto">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
-                    <FaUtensils className="text-2xl" />
-                  </div>
-                  <h1 className="text-xl sm:text-2xl font-bold tracking-wide">
-                    {restaurant.name || "Cafe"}
-                  </h1>
-                </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+          {/* Header Section */}
+          <div className="mb-2 sm:mb-12">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+              Our Menu
+            </h1>
+            <p className="text-gray-600 text-sm sm:text-base">
+              Discover our delicious offerings
+            </p>
+          </div>
 
-                <div className="space-y-1.5 text-xs sm:text-sm text-white/95">
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    <span>{restaurant.phoneNumber || "NA"}</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 mt-0.5 flex-shrink-0" />
-                    <span className="flex-1 line-clamp-2">
-                      {restaurant.address || "NA"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Table Badge */}
-            <div className="bg-emerald-50 border-y border-emerald-200 py-1 ">
-              <div className="max-w-6xl mx-auto text-center">
-                <span className="text-gray-700 text-xs sm:text-sm font-medium">
-                  Dining at{" "}
-                  <span className="font-bold text-emerald-700 text-sm sm:text-base">
-                    {table.name}
-                  </span>
-                </span>
-              </div>
-            </div>
-          </header>
-
-          {/* MENU SECTION */}
-          <main className="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-5">
-            {/* SEARCH BAR */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 px-3 sm:px-4 py-2.5 sm:py-3 flex items-center gap-2 sm:gap-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2.5}
-                stroke="currentColor"
-                className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 flex-shrink-0"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1110.65 6.65a7.5 7.5 0 016 9.999z"
-                />
-              </svg>
+          {/* Search and Filters */}
+          <div className="mb-2 sm:mb-8 space-y-2 sm:space-y-5">
+            {/* Search Bar */}
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search dishes..."
+                placeholder="Search for dishes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-transparent focus:outline-none text-gray-800 placeholder-gray-400 text-sm sm:text-base"
+                className="w-full pl-12 pr-4 py-3.5 sm:py-4 bg-white border-2 border-gray-200 rounded-2xl focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-50 transition-all text-gray-900 placeholder-gray-400 text-sm sm:text-base shadow-sm"
               />
             </div>
+            <FoodFilterToggles setFilter={setFilter} filter={filter} />
+          </div>
 
-            {/* FILTER TOGGLES */}
-            <FoodFilterToggles filter={filter} setFilter={setFilter} />
-
-            {/* CATEGORY TABS */}
-            <div className="space-y-3">
-              <div className="text-lg sm:text-xl font-semibold text-gray-800">
-                Categories
-              </div>
-              <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
+          {/* Category Pills */}
+          <div className="mb-2 sm:mb-10">
+            <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-3 scrollbar-hide -mx-4 px-4 py-0.5 sm:mx-1 sm:px-0">
+              <button
+                onClick={() => setCategoryFilter("All")}
+                className={`flex-shrink-0 px-4 sm:px-6 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-200 ${
+                  categoryFilter === "All"
+                    ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-200 scale-105"
+                    : "bg-white text-gray-700 border-2 border-gray-200 hover:border-emerald-400 hover:shadow-md"
+                }`}
+              >
+                All
+              </button>
+              {menu.map((cat) => (
                 <button
-                  onClick={() => setCategoryFilter("All")}
-                  className={`whitespace-nowrap px-4 sm:px-5 py-2 rounded-5 font-semibold text-xs sm:text-sm ${
-                    categoryFilter === "All"
-                      ? "bg-emerald-600 text-white shadow-md"
-                      : "bg-white text-gray-700 border-2 border-gray-200 hover:border-emerald-500"
+                  key={cat._id}
+                  onClick={() => setCategoryFilter(cat.name)}
+                  className={`flex-shrink-0 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full font-semibold text-sm sm:text-base transition-all duration-200 ${
+                    categoryFilter === cat.name
+                      ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md shadow-emerald-200 scale-105"
+                      : "bg-white text-gray-700 border-2 border-gray-200 hover:border-emerald-400 hover:shadow-md"
                   }`}
                 >
-                  All
+                  {cat.name}
                 </button>
-                {menu.map((cat) => (
-                  <button
-                    key={cat._id}
-                    onClick={() => setCategoryFilter(cat.name)}
-                    className={`whitespace-nowrap px-4 sm:px-5 py-2 rounded-5 font-semibold text-xs sm:text-sm ${
-                      categoryFilter === cat.name
-                        ? "bg-emerald-600 text-white shadow-md"
-                        : "bg-white text-gray-700 border-2 border-gray-200 hover:border-emerald-500"
-                    }`}
-                  >
-                    {cat.name}
-                  </button>
-                ))}
-              </div>
+              ))}
             </div>
+          </div>
 
-            {/* MENU ITEMS */}
-            {filteredMenu.length > 0 ? (
-              filteredMenu.map((category) => (
-                <section key={category._id} className="space-y-3 sm:space-y-4">
-                  <div className="flex items-center gap-3">
-                    <div className="text-xl sm:text-2xl font-semibold  text-gray-800">
+          {/* Menu Items Grid */}
+          {filteredMenu.length > 0 ? (
+            <div className="space-y-5 sm:space-y-14">
+              {filteredMenu.map((category) => (
+                <section key={category._id}>
+                  {/* Category Header */}
+                  <div className="flex items-center gap-4 mb-6 sm:mb-8">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
                       {category.name}
-                    </div>
-                    <div className="flex-1 h-0.5 bg-gradient-to-r from-gray-300 to-transparent rounded"></div>
+                    </h2>
+                    <div className="flex-1 h-px bg-gradient-to-r from-gray-300 via-gray-200 to-transparent"></div>
                   </div>
 
-                  {/* 2 ITEMS PER ROW */}
-                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                    {category.items.map((item) => {
-                      return (
-                        <div
-                          key={item._id}
-                          className="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-gray-200 hover:shadow-lg"
-                        >
-                          {/* Image */}
-                          <div className="relative h-32 sm:h-40 ">
-                            {item.imageUrl ? (
-                              <img
-                                src={item.imageUrl}
-                                alt={item.name}
-                                className="object-cover rounded-b-2xl  w-full h-full"
-                              />
-                            ) : (
-                              <div className="h-full w-full flex items-center justify-center text-gray-400 text-xs">
-                                No Image
+                  {/* Items Grid */}
+                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
+                    {category.items.map((item) => (
+                      <div
+                        key={item._id}
+                        className="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-emerald-200 hover:-translate-y-1"
+                      >
+                        {/* Image Container */}
+                        <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
+                          {item.imageUrl ? (
+                            <img
+                              src={item.imageUrl}
+                              alt={item.name}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <div className="text-center">
+                                <div className="text-4xl sm:text-5xl mb-2">
+                                  🍽️
+                                </div>
+                                <p className="text-xs text-gray-400">
+                                  No Image
+                                </p>
                               </div>
-                            )}
+                            </div>
+                          )}
 
-                            {/* Bestseller Badge */}
-                            {item.isBestSeller && (
-                              <span className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 bg-amber-500 text-white text-[9px] sm:text-xs font-bold px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow-md">
-                                Best
-                              </span>
-                            )}
-
-                            {/* Veg/Non-veg Badge */}
-                            <div className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2">
+                          {/* Badges Container */}
+                          <div className="absolute inset-0 p-3">
+                            {/* Veg/Non-veg Badge - Top Left */}
+                            <div className="absolute top-2 left-2">
                               {item.isVeg === false ? (
-                                <div className="flex items-center justify-center border-2 h-5 w-5 sm:h-6 sm:w-6 rounded bg-white shadow-md border-red-600">
+                                <div className="flex items-center justify-center border-2 border-red-600 w-6 h-6 sm:w-7 sm:h-7 rounded bg-white/95 backdrop-blur-sm shadow-lg">
                                   <Triangle
-                                    size={12}
-                                    className="text-red-600 sm:w-3 sm:h-3"
-                                    fill="red"
+                                    size={14}
+                                    className="text-red-600"
+                                    fill="currentColor"
                                   />
                                 </div>
                               ) : (
-                                <div className="flex bg-white items-center justify-center border-2 rounded h-5 w-5 sm:h-6 sm:w-6 border-green-600 shadow-md">
-                                  <FaCircle className="w-3 h-3 sm:w-2.5 sm:h-2.5 text-emerald-600" />
+                                <div className="flex items-center justify-center border-2 border-emerald-600 w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-white/95 backdrop-blur-sm shadow-lg">
+                                  <div className="w-3 h-3 rounded-full bg-emerald-600"></div>
                                 </div>
                               )}
                             </div>
-                          </div>
 
-                          {/* Details */}
-                          <div className="p-2.5 sm:p-3 space-y-2 sm:space-y-2.5">
-                            <div className="flex flex-col justify-between">
-                              <div className="font-bold truncate text-gray-900 text-xs sm:text-sm mb-0.5 sm:mb-1 line-clamp-2 leading-tight">
-                                {item.name || "NA"}
+                            {/* Bestseller Badge - Top Right */}
+                            {item.isBestSeller && (
+                              <div className="absolute top-2 right-2">
+                                <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg backdrop-blur-sm">
+                                  <span>Bestseller</span>
+                                </span>
                               </div>
-                              <div className="flex justify-between">
-                                <div className="">
-                                  <div className="text-emerald-700 py-1 font-bold text-sm sm:text-base">
-                                    ₹{item.discountedPrice || "NA"}
-                                  </div>
-                                  <div className="text-[10px] text-decoration-line-through text-gray-400">
-                                    ₹{item.basePrice || "NA"}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                            )}
                           </div>
                         </div>
-                      );
-                    })}
+
+                        {/* Content */}
+                        <div className="p-2 sm:p-5">
+                          <h3 className="font-bold text-gray-900 text-base sm:text-lg">
+                            {item.name || "NA"}
+                          </h3>
+
+                          <div className="flex items-end justify-between ">
+                            <div className="flex flex-col">
+                              <span className="text-2xl sm:text-3xl font-bold text-emerald-600">
+                                ₹{item.discountedPrice || "NA"}
+                              </span>
+                              {item.basePrice !== item.discountedPrice && (
+                                <span className="text-sm text-gray-400 line-through">
+                                  ₹{item.basePrice || "NA"}
+                                </span>
+                              )}
+                            </div>
+
+                            {item.basePrice !== item.discountedPrice && (
+                              <div className="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full">
+                                {Math.round(
+                                  ((item.basePrice - item.discountedPrice) /
+                                    item.basePrice) *
+                                    100
+                                )}
+                                % OFF
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </section>
-              ))
-            ) : (
-              <div className="text-center text-gray-500 py-16 sm:py-20 bg-white rounded-2xl shadow-sm">
-                <div className="text-4xl sm:text-5xl mb-3">🍽️</div>
-                <p className="text-base sm:text-lg font-medium">
-                  No items found
-                </p>
-                <p className="text-xs sm:text-sm text-gray-400 mt-1">
-                  Try adjusting your search or filters
-                </p>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 sm:py-24">
+              <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-gray-100 to-gray-50 rounded-full mb-6">
+                <span className="text-4xl sm:text-5xl">🔍</span>
               </div>
-            )}
-          </main>
-        </>
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+                No items found
+              </h3>
+              <p className="text-gray-500 text-sm sm:text-base max-w-md mx-auto">
+                Try adjusting your search or filters to find what you're looking
+                for
+              </p>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );
