@@ -4,7 +4,7 @@ const QRCode = require("qrcode");
 const { nanoid } = require("nanoid");
 
 // ✅ Base URL — You can move this to ENV later
-const BASE_URL = "https://tasty-tokens.vercel.app";
+const BASE_URL = "https://scan-my-menu.vercel.app/";
 
 // ===================================================================
 // ✅ CREATE TABLE (POST)
@@ -13,7 +13,7 @@ exports.postAddTable = async (req, res) => {
   console.log("Create Table Request Body:", req.body);
   try {
     const restaurantId = req.user.restaurantId;
-    console.log(restaurantId)
+    console.log(restaurantId);
     const { name } = req.body;
 
     if (!name) {
@@ -84,7 +84,9 @@ exports.postAddTable = async (req, res) => {
 // ===================================================================
 exports.getAllTables = async (req, res) => {
   try {
-    const tables = await Table.find({ restaurantId: req.user.restaurantId }).sort({
+    const tables = await Table.find({
+      restaurantId: req.user.restaurantId,
+    }).sort({
       createdAt: -1,
     });
 
