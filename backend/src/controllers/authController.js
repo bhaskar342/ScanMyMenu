@@ -64,7 +64,7 @@ exports.postLogin = async (req, res) => {
     // 🔍 Find by email OR phoneNumber
     const restaurant = await Restaurant.findOne({
       $or: [{ email: identifier }, { phoneNumber: identifier }],
-    }).select("-password -createdAt -__v -isActive -_id");
+    }).select("-password -createdAt -__v -isActive ");
 
     if (!restaurant) {
       return res
