@@ -1,17 +1,10 @@
-import { useContext } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
-import { Settings, LogOut } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 function SideBar({
   isMobileSidebarOpen,
   setIsMobileSidebarOpen,
   sidebaritems,
-  role,
 }) {
-  const { logout } = useContext(AuthContext);
-  const navigate = useNavigate();
-
   // Menu Item Component
   const MenuItem = ({ item, onClick }) => (
     <NavLink
@@ -49,7 +42,6 @@ function SideBar({
   );
   return (
     <>
-      {/* Sidebar - Mobile */}
       {isMobileSidebarOpen && (
         <>
           <div
@@ -68,38 +60,6 @@ function SideBar({
                   />
                 ))}
               </nav>
-
-              <div className="space-y-1.5 p-2 border-t border-slate-800">
-                {/* Setting */}
-                <NavLink
-                  to={`/${role}/settings`}
-                  onClick={() => setIsMobileSidebarOpen(false)}
-                  className={({ isActive }) =>
-                    `flex items-center text-decoration-none text-white space-x-3 p-2.5 rounded-xl hover:bg-white/5 hover:text-white transition-all group ${
-                      isActive ? "bg-white/10" : ""
-                    }`
-                  }
-                >
-                  <div className="p-2 rounded-xl bg-white/5 group-hover:bg-white/10 transition-all">
-                    <Settings className="w-5 h-5 text-gray-400 group-hover:text-emerald-400 group-hover:rotate-90 transition-all duration-300" />
-                  </div>
-                  <span className="font-medium text-[15px]">Settings</span>
-                </NavLink>
-
-                {/* LogOut */}
-                <button
-                  className="w-full flex items-center space-x-3 px-md-4 py-md-3.5 p-3 rounded-4 text-red-400 hover:bg-red-500/10 transition-all group"
-                  onClick={() => {
-                    logout();
-                    navigate("/");
-                  }}
-                >
-                  <div className="p-2 rounded-lg bg-red-500/10 group-hover:bg-red-500/20 transition-all">
-                    <LogOut className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                  <span className="font-medium text-[15px]">Logout</span>
-                </button>
-              </div>
             </div>
           </aside>
         </>

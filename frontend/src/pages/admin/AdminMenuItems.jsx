@@ -91,7 +91,7 @@ export default function AdminMenuItems() {
         />
       )}
 
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col my-4 sm:flex-row gap-4">
         {/* Category */}
         <div className="w-full sm:w-2/9">
           {/* Category Header Section */}

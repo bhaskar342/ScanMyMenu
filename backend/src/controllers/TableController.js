@@ -4,7 +4,7 @@ const QRCode = require("qrcode");
 const { nanoid } = require("nanoid");
 
 // ✅ Base URL — You can move this to ENV later
-const BASE_URL = "https://scan-my-menu.vercel.app/";
+const BASE_URL = process.env.BASE_URL;
 
 // ===================================================================
 // ✅ CREATE TABLE (POST)

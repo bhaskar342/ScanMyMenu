@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
 const BASE_API = import.meta.env.VITE_BASE_API;
 
@@ -76,7 +76,9 @@ export const CategoryProvider = ({ children }) => {
       setIsCatLoading(false);
     }
   };
-
+  useEffect(() => {
+    if (token) getAllCategories();
+  }, [token]);
   // ----------------------------------------------------------------------
   // ✅ DELETE CATEGORY
   // ----------------------------------------------------------------------

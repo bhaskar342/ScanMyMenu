@@ -1,54 +1,17 @@
-import { useContext, useState, useMemo, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useContext, useState, useMemo } from "react";
 import Loader from "../../components/Loader";
 import { PublicContext } from "../../context/PublicContext";
-import { FaUtensils, FaCircle, FaPlus, FaMinus } from "react-icons/fa";
-import { FiShoppingCart } from "react-icons/fi";
-import { MdHistory } from "react-icons/md";
+import { FaUtensils, FaCircle } from "react-icons/fa";
 import { Triangle, MapPin, Phone } from "lucide-react";
 import "../../index.css";
 import FoodFilterToggles from "../../components/FoodFilterToggles";
 
 export default function CustomerMenu() {
   const [filter, setFilter] = useState(null);
-  const navigate = useNavigate();
-  const { restaurantId, tableId } = useParams();
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [showAddToCartModal, setShowAddToCartModal] = useState(false);
-  const [order, setOrder] = useState(null);
   const { isLoading, data, error } = useContext(PublicContext);
-  const { addItem, cartItems, increaseQuantity, decreaseQuantity } =
-    useContext(CartContext);
-
   const { restaurant = {}, table = {}, menu = [] } = data || {};
-
-  useEffect(() => {
-    const storedOrder = localStorage.getItem("order");
-    if (storedOrder) {
-      setOrder(JSON.parse(storedOrder));
-    }
-  }, []);
-  console.log("Orders from localStorage:", order);
-
-  const orderId = order?.orderId;
-  // Get item quantity in cart - only count items with matching itemId
-  const getItemQuantityInCart = (itemId) => {
-    const items = cartItems.filter((cartItem) => cartItem.itemId === itemId);
-    return items.reduce((total, cartItem) => total + cartItem.quantity, 0);
-  };
-
-  // Get cart item index for a specific item
-  const getCartItemIndex = (itemId) => {
-    return cartItems.findIndex((cartItem) => cartItem.itemId === itemId);
-  };
-
-  // Total items in cart
-  const totalCartItems = cartItems.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-  );
 
   const filteredMenu = useMemo(() => {
     return menu
@@ -73,20 +36,6 @@ export default function CustomerMenu() {
       }))
       .filter((category) => category.items.length > 0);
   }, [menu, categoryFilter, filter, searchQuery]);
-
-  const beverages = useMemo(() => {
-    const beverageCategory = menu.find(
-      (cat) => cat.name?.toLowerCase() === "beverages"
-    );
-    return beverageCategory ? beverageCategory.items : [];
-  }, [menu]);
-
-  const desserts = useMemo(() => {
-    const dessertsCategory = menu.find(
-      (des) => des.name?.toLowerCase() === "desserts"
-    );
-    return dessertsCategory ? dessertsCategory.items : [];
-  }, [menu]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50/30 pb-28">
@@ -221,9 +170,6 @@ export default function CustomerMenu() {
                   {/* 2 ITEMS PER ROW */}
                   <div className="grid grid-cols-2 gap-3 sm:gap-4">
                     {category.items.map((item) => {
-                      const itemQty = getItemQuantityInCart(item._id);
-                      const cartIndex = getCartItemIndex(item._id);
-
                       return (
                         <div
                           key={item._id}
@@ -283,73 +229,8 @@ export default function CustomerMenu() {
                                     ₹{item.basePrice || "NA"}
                                   </div>
                                 </div>
-                                {itemQty === 0 ? (
-                                  <div
-                                    onClick={() => {
-                                      if (
-                                        item.variants &&
-                                        item.variants.length > 0
-                                      ) {
-                                        // Has variants → open modal
-                                        setSelectedItem(item);
-                                        setShowAddToCartModal(true);
-                                      } else {
-                                        // No variants → directly add to cart
-                                        addItem({
-                                          _id: item._id,
-                                          item: item,
-                                          itemId: item._id,
-                                          name: item.name,
-                                          isVeg: item.isVeg,
-                                          quantity: 1,
-                                          selectedVariant: null,
-                                          totalPrice: Number(
-                                            item.discountedPrice ??
-                                              item.basePrice ??
-                                              0
-                                          ),
-                                        });
-                                      }
-                                    }}
-                                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold sm:py-2.5 rounded-4 flex items-center justify-center max-h-7 sm:text-sm cursor-pointer"
-                                  >
-                                    {console.log("item", item)}
-
-                                    <span className="text-xs px-3 py-0.5">
-                                      Add
-                                    </span>
-                                  </div>
-                                ) : (
-                                  <div className="flex items-center justify-between bg-emerald-50 border-2 border-emerald-600 rounded-4 sm:px-3 sm:py-2 max-h-7 px-2 py-0.5 gap-1">
-                                    <button
-                                      onClick={() => {
-                                        if (cartIndex !== -1) {
-                                          decreaseQuantity(cartIndex);
-                                        }
-                                      }}
-                                      className="text-emerald-700 hover:text-emerald-900 font-bold"
-                                    >
-                                      <FaMinus className="text-xs sm:text-sm" />
-                                    </button>
-                                    <span className="font-bold text-emerald-700 text-sm sm:text-base sm:px-3">
-                                      {itemQty}
-                                    </span>
-                                    <button
-                                      onClick={() => {
-                                        if (cartIndex !== -1) {
-                                          increaseQuantity(cartIndex);
-                                        }
-                                      }}
-                                      className="text-emerald-700 hover:text-emerald-900 font-bold "
-                                    >
-                                      <FaPlus className="text-xs sm:text-sm" />
-                                    </button>
-                                  </div>
-                                )}
                               </div>
                             </div>
-
-                            {/* Add to Cart Button */}
                           </div>
                         </div>
                       );
@@ -369,49 +250,6 @@ export default function CustomerMenu() {
               </div>
             )}
           </main>
-
-          {/* FLOATING ACTION BUTTONS */}
-          {totalCartItems > 0 && (
-            <div className="fixed bottom-5 sm:bottom-6 left-1/2 -translate-x-1/2 z-40 flex gap-2 sm:gap-3">
-              {/* View Cart */}
-              <button
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 sm:px-6 py-3 sm:py-3.5 rounded-4 shadow-2xl flex items-center gap-2 text-sm sm:text-base"
-                onClick={() => navigate(`/r/${restaurantId}/t/${tableId}/cart`)}
-              >
-                <FiShoppingCart className="text-lg sm:text-xl" />
-                <span className="hidden xs:inline">View Cart</span>
-                <span className="bg-white text-emerald-700 font-bold px-2 sm:px-2.5 py-0.5 rounded-full text-xs sm:text-sm">
-                  {totalCartItems}
-                </span>
-              </button>
-            </div>
-          )}
-
-          {/* Order Status Button - Always visible in top right */}
-          {order && (
-            <button
-              className="fixed top-20 sm:top-4 right-3 sm:right-4 z-40 bg-white hover:bg-gray-50 text-gray-700 font-semibold px-2 sm:px-4 py-2 rounded-5 shadow border-2 border-emerald-700  flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
-              onClick={() =>
-                navigate(`/r/${restaurantId}/t/${tableId}/order/${orderId}`)
-              }
-            >
-              <MdHistory className="text-base sm:text-lg" />
-              <span className="hidden sm:inline">Orders</span>
-            </button>
-          )}
-
-          {/* ADD TO CART MODAL */}
-          <AddToCartModal
-            item={selectedItem}
-            drinks={beverages}
-            desserts={desserts}
-            show={showAddToCartModal}
-            onClose={() => setShowAddToCartModal(false)}
-            onAddToCart={(cartData) => {
-              console.log("Added to cart:", cartData);
-              addItem(cartData);
-            }}
-          />
         </>
       )}
     </div>

@@ -16,6 +16,12 @@ exports.getPublicMenu = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Restaurant not found" });
     }
+    if (!restaurant.isOpen) {
+      return res.status(403).json({
+        success: false,
+        message: "Restaurant is currently closed",
+      });
+    }
 
     // 2️⃣ Validate table
     const table = await Table.findOne({ restaurantId, code: tableCode }).select(
@@ -26,13 +32,13 @@ exports.getPublicMenu = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Table not found" });
     }
+    
     // ✅ Increment scan count
-    await Table.findByIdAndUpdate(
+    await Table.findOneAndUpdate(
       { restaurantId, code: tableCode },
-      {
-        $inc: { scanCount: 1 },
-      }
+      { $inc: { scanCount: 1 } }
     );
+
     // 3️⃣ Fetch all active categories
     const categories = await FoodCategory.find({
       restaurantId,

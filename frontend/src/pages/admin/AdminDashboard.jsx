@@ -1,92 +1,24 @@
 import { useContext, useMemo, useState, useEffect } from "react";
 import { TableContext } from "../../context/TableAndQrContext";
-import { useNavigate } from "react-router-dom";
+import { SettingContext } from "../../context/SettingsContext";
 import { MenuContext } from "../../context/MenuContext";
-
-function Sparkline({ points = [], className = "" }) {
-  if (!points.length) return null;
-  const w = 60;
-  const h = 20;
-  const max = Math.max(...points);
-  const min = Math.min(...points);
-  const range = max - min || 1;
-  const path = points
-    .map((p, i) => {
-      const x = (i / (points.length - 1)) * w;
-      const y = h - ((p - min) / range) * h;
-      return `${i === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`;
-    })
-    .join(" ");
-  return (
-    <svg
-      viewBox={`0 0 ${w} ${h}`}
-      width={w}
-      height={h}
-      className={`inline-block ${className}`}
-      preserveAspectRatio="none"
-    >
-      <path d={path} fill="none" stroke="currentColor" strokeWidth="1.5" />
-    </svg>
-  );
-}
-
-function AreaChart({ series }) {
-  const w = 560;
-  const h = 160;
-  const max = Math.max(...series.map((s) => s.value));
-  const min = Math.min(...series.map((s) => s.value));
-  const range = max - min || 1;
-  const points = series
-    .map((s, i) => {
-      const x = (i / (series.length - 1)) * w;
-      const y = h - ((s.value - min) / range) * h;
-      return `${x},${y}`;
-    })
-    .join(" ");
-  const areaPath = `M0,${h} L${points} L${w},${h} Z`;
-  const linePath = `M${points}`;
-  return (
-    <svg
-      viewBox={`0 0 ${w} ${h}`}
-      className="w-full h-40"
-      preserveAspectRatio="none"
-    >
-      <defs>
-        <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="#10B981" stopOpacity="0.18" />
-          <stop offset="100%" stopColor="#10B981" stopOpacity="0.02" />
-        </linearGradient>
-      </defs>
-      <path d={areaPath} fill="url(#g1)" />
-      <path
-        d={linePath}
-        fill="none"
-        stroke="#059669"
-        strokeWidth="2"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-// helper: compare local date (year, month, day)
-function isSameLocalDay(aDate, bDate) {
-  const a = new Date(aDate);
-  const b = new Date(bDate);
-  return (
-    a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
-  );
-}
+import DashboardCards from "../../components/admin/DashboardCards";
+import { CategoryContext } from "../../context/CategoryContext";
+import { OpenStatusCard } from "../../components/admin/OpenStatusCard";
+import { MenuHealthCards } from "../../components/admin/MenuHealthCards";
+import { MostScannedTableCard } from "../../components/admin/MostScannedTableCard";
+import { DashboardCategoryList } from "../../components/admin/DashboardCategoryList";
+import { DashboardMenuItemsList } from "../../components/admin/DashboardMenuItemsList";
+import Footer from "../../components/Footer";
+import DashboardSkeleton from "../../components/DashboardSkeleton";
+import RestaurantOverviewCard from "../../components/admin/RestaurantOverviewCard";
+import { MdDashboard } from "react-icons/md";
 
 export default function AdminDashboard() {
-  const navigate = useNavigate();
-  const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
   const { tables = [] } = useContext(TableContext);
   const { menuItems } = useContext(MenuContext);
+  const { categories } = useContext(CategoryContext);
+  const { settings, updateSettings } = useContext(SettingContext);
 
   // ================= MENU HEALTH METRICS =================
   const totalItems = menuItems?.length || 0;
@@ -95,104 +27,126 @@ export default function AdminDashboard() {
     () => menuItems?.filter((item) => item.isAvailable === true).length || 0,
     [menuItems]
   );
+  const isLoading =
+    !settings ||
+    Object.keys(settings).length === 0 ||
+    menuItems === undefined ||
+    categories === undefined ||
+    tables === undefined;
 
   const inactiveItems = totalItems - activeItems;
 
-  const healthPercent = totalItems
-    ? Math.round((activeItems / totalItems) * 100)
-    : 0;
+  const emptyCategories = categories.filter((category) => {
+    return !menuItems.some((item) => item.category?._id === category._id);
+  }).length;
 
-  // ================= QR ANALYTICS (MOCK) =================
-  const qrScansToday = 38;
-  const qrScansThisWeek = 214;
-
-  const qrTrend = useMemo(
-    () => [12, 18, 24, 20, 30, 35, 38], // sparkline points
-    []
+  const topTable = tables.reduce(
+    (max, t) => (t.scanCount > max.scanCount ? t : max),
+    tables[0]
   );
-  console.log("menu items:", menuItems);
+
+  const toggleOpen = async () => {
+    await updateSettings({
+      isOpen: !settings.isOpen,
+    });
+  };
+
   return (
-    <div className="p-2 md:p-6 py-lg-4 px-lg-3">
-      <div className="max-w-[1280px] mx-auto space-y-6">
-        {/* header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <div className="text-2xl md:text-3xl font-semibold text-emerald-900">
-              Dashboard
-            </div>
-            <span className="text-sm text-gray-500 mt-1">
-              Real-time view of your restaurant items.
-            </span>
-          </div>
-        </div>
-        {/* ================= STATS CARDS ================= */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Total Menu Items */}
-          <div className="bg-white rounded-xl p-6 shadow-sm border">
-            <p className="text-xl text-gray-500">Total Menu Items</p>
-            <h3 className="text-4xl font-semibold text-gray-800 mt-1">
-              {totalItems}
-            </h3>
-          </div>
+    <div className="min-h-screen ">
+      <div className="w-full sm:px-4 lg:px-6 sm:pt-8 ">
+        <div className=" mx-auto space-y-6 sm:space-y-8">
+          {isLoading ? (
+            <DashboardSkeleton />
+          ) : (
+            <>
+              {/* ===== HEADER ===== */}
+              <div className="relative">
+                {/* Decorative Background */}
+                <div className="absolute top-0 left-0 w-64 h-64 bg-gradient-to-br from-emerald-200/20 to-transparent rounded-full blur-3xl -z-10"></div>
 
-          {/* Active Items */}
-          <div className="bg-white rounded-xl p-4 shadow-sm border">
-            <p className="text-sm text-gray-500">Active Items</p>
-            <h3 className="text-2xl font-semibold text-emerald-600 mt-1">
-              {activeItems}
-            </h3>
-            <p className="text-xs text-gray-400 mt-1">
-              {healthPercent}% of menu active
-            </p>
-          </div>
+                <div className="bg-white rounded-3xl shadow-lg border border-gray-100 p-3 sm:p-6">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+                    {/* Title Section */}
+                    <div className="flex items-start gap-4">
+                      <div className="relative flex-shrink-0">
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl blur-lg opacity-50"></div>
+                        <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white shadow-xl">
+                          <MdDashboard className="w-8 h-8 sm:w-10 sm:h-10" />
+                        </div>
+                      </div>
 
-          {/* Out of Stock */}
-          <div className="bg-white rounded-xl p-4 shadow-sm border">
-            <p className="text-sm text-gray-500">Out of Stock</p>
-            <h3 className="text-2xl font-semibold text-red-500 mt-1">
-              {inactiveItems}
-            </h3>
-          </div>
+                      <div>
+                        <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2">
+                          Dashboard
+                        </h1>
+                        <p className="text-sm sm:text-base text-gray-600 flex items-center gap-2">
+                          <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
+                          Real-time overview of your restaurant
+                        </p>
+                      </div>
+                    </div>
 
-          {/* QR Scans */}
-          <div className="bg-white rounded-xl p-4 shadow-sm border">
-            <p className="text-sm text-gray-500">QR Scans (Today)</p>
-            <div className="flex items-center justify-between mt-1">
-              <h3 className="text-2xl font-semibold text-gray-800">
-                {qrScansToday}
-              </h3>
-              <Sparkline points={qrTrend} className="text-emerald-500" />
-            </div>
-            <p className="text-xs text-gray-400 mt-1">
-              {qrScansThisWeek} scans this week
-            </p>
-          </div>
-        </div>
-        {/* ================= MENU HEALTH ================= */}
-        <div className="bg-white rounded-xl p-5 shadow-sm border">
-          <div className="flex items-center justify-between">
-            <h4 className="font-medium text-gray-800">Menu Health</h4>
-            <span
-              className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                healthPercent > 80
-                  ? "bg-emerald-100 text-emerald-700"
-                  : "bg-yellow-100 text-yellow-700"
-              }`}
-            >
-              {healthPercent > 80 ? "Healthy" : "Needs Attention"}
-            </span>
-          </div>
+                    {/* Open Status Card */}
+                    <div className="lg:self-start">
+                      <OpenStatusCard
+                        isOpen={settings.isOpen}
+                        onToggle={toggleOpen}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-          <div className="mt-3 w-full bg-gray-100 rounded-full h-2">
-            <div
-              className="bg-emerald-500 h-2 rounded-full transition-all"
-              style={{ width: `${healthPercent}%` }}
-            />
-          </div>
+              {/* ===== METRICS CARDS ===== */}
+              <div>
+                <DashboardCards
+                  totalItems={menuItems.length}
+                  activeCategories={categories.filter((c) => c.isActive).length}
+                  totalScans={tables.reduce((sum, t) => sum + t.scanCount, 0)}
+                  totalTables={tables.length}
+                  inactiveItems={inactiveItems}
+                />
+              </div>
 
-          <p className="text-xs text-gray-500 mt-2">
-            Keep your menu updated to improve customer experience.
-          </p>
+              {/* ===== INSIGHTS & HEALTH SECTION ===== */}
+              <div className="grid grid-cols-1 gap-6">
+                {/* Most Scanned Table */}
+                {topTable && (
+                  <div>
+                    <MostScannedTableCard table={topTable} />
+                  </div>
+                )}
+
+                {/* Health Alerts */}
+                {(inactiveItems > 0 || emptyCategories > 0) && (
+                  <div>
+                    <MenuHealthCards
+                      inactiveItems={inactiveItems}
+                      emptyCategories={emptyCategories}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* ===== MENU & CATEGORY LISTS ===== */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <DashboardCategoryList
+                  categories={categories}
+                  menuItems={menuItems}
+                />
+                <DashboardMenuItemsList menuItems={menuItems} />
+              </div>
+              {/* ===== RESTAURANT OVERVIEW ===== */}
+              <div>
+                <RestaurantOverviewCard restaurant={settings} />
+              </div>
+
+              {/* ===== FOOTER ===== */}
+              <div className="mt-12">
+                <Footer />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>

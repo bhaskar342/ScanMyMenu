@@ -23,7 +23,7 @@ function AdminQrCode() {
 
   const { createTableAndQr, handleDownload, handleDelete, tables, isLoading } =
     useContext(TableContext);
-
+  console.log(tables);
   const onSubmit = async (data) => {
     const result = await createTableAndQr(data);
     if (result.success) {
@@ -66,7 +66,7 @@ function AdminQrCode() {
       <ErrorModal message={errorMessage} onClose={() => setErrorMessage("")} />
 
       {/* HEADER */}
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+      <div className="flex  my-4 flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div className="flex items-center gap-3">
           <div className="bg-emerald-100 p-3 rounded-xl">
             <MdQrCodeScanner className="text-emerald-600 w-7 h-7" />
