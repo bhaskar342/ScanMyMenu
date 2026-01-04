@@ -161,7 +161,7 @@ export function DashboardCategoryList({ categories = [], menuItems = [] }) {
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500"></div>
 
       {/* Custom Scrollbar Styles */}
-      <style jsx>{`
+      <style jsx="true">{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
         }

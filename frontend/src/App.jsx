@@ -30,7 +30,6 @@ function App() {
       <Routes>
         {/* Public / Auth routes */}
         <Route path="/" element={<LoginPage />} />
-
         {/* Admin */}
         <Route
           path="/admin"
@@ -63,13 +62,13 @@ function App() {
 
         {/* Super Admin */}
         <Route
-          path="/super-admin"
+          path="/superadmin"
           element={
             <ProtectedRoute allowedRoles={["superadmin"]}>
               <SuperAdminLayout />
             </ProtectedRoute>
           }
-        />
+        ></Route>
 
         <Route path="*" element={<Page404 />} />
       </Routes>

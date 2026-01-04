@@ -12,48 +12,27 @@ import Header from "../../components/Header";
 import { Outlet } from "react-router-dom";
 
 function SuperAdminLayout() {
-  const menuItems = [
+  const sidebaritems = [
     {
-      id: "dashboard",
+      id: "home",
       icon: Home,
-      label: "Dashboard",
+      label: "Home",
       badge: null,
-      path: "super-admin/dashboard",
+      path: "superadmin/home",
     },
     {
       id: "qr-codes",
       icon: QrCode,
       label: "QR Codes",
       badge: null,
-      path: "super-admin/qr-codes",
-    },
-    {
-      id: "orders",
-      icon: ShoppingBag,
-      label: "Orders",
-      badge: "12",
-      path: "super-admin/orders",
-    },
-    {
-      id: "analytics",
-      icon: BarChart3,
-      label: "Analytics",
-      badge: null,
-      path: "super-admin/analytics",
+      path: "superadmin/qr-codes",
     },
     {
       id: "customers",
       icon: Users,
       label: "Customers",
       badge: null,
-      path: "super-admin/customers",
-    },
-    {
-      id: "notifications",
-      icon: Bell,
-      label: "Notifications",
-      badge: "3",
-      path: "super-admin/notifications",
+      path: "superadmin/customers",
     },
   ];
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -63,11 +42,12 @@ function SuperAdminLayout() {
       <Header
         isMobileSidebarOpen={isMobileSidebarOpen}
         setIsMobileSidebarOpen={setIsMobileSidebarOpen}
+        sidebaritems={sidebaritems}
       />
       <SideBar
         isMobileSidebarOpen={isMobileSidebarOpen}
         setIsMobileSidebarOpen={setIsMobileSidebarOpen}
-        menuItems={menuItems}
+        sidebaritems={sidebaritems}
         role={"superadmin"}
       />
       {/* Main Content */}

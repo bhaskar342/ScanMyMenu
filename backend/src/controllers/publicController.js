@@ -16,6 +16,12 @@ exports.getPublicMenu = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Restaurant not found" });
     }
+    if (!restaurant.isActive) {
+      return res.status(402).json({
+        success: false,
+        message: "Restaurant is currently not under service",
+      });
+    }
     if (!restaurant.isOpen) {
       return res.status(403).json({
         success: false,
@@ -32,7 +38,7 @@ exports.getPublicMenu = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Table not found" });
     }
-    
+
     // ✅ Increment scan count
     await Table.findOneAndUpdate(
       { restaurantId, code: tableCode },

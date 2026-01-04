@@ -173,7 +173,7 @@ function Header({ isMobileSidebarOpen, setIsMobileSidebarOpen, sidebaritems }) {
         </div>
       </div>
 
-      <style jsx>{`
+      <style jsx="true">{`
         @keyframes slideDown {
           from {
             opacity: 0;

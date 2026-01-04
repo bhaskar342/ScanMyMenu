@@ -117,7 +117,7 @@ export function OpenStatusCard({ isOpen, onToggle }) {
       </div>
 
       {/* Custom Animation */}
-      <style jsx>{`
+      <style jsx="true">{`
         @keyframes bounce-slow {
           0%,
           100% {

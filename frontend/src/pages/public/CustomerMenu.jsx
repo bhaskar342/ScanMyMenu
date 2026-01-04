@@ -1,9 +1,9 @@
 import { useContext, useState, useMemo } from "react";
-import Loader from "../../components/Loader";
 import { PublicContext } from "../../context/PublicContext";
 import "../../index.css";
 import FoodFilterToggles from "../../components/FoodFilterToggles";
-import { Triangle, Search, Loader2, Leaf, Drumstick, Star } from "lucide-react";
+import { Triangle, Search } from "lucide-react";
+import FoodLoaderDemo from "../../components/FoodLoader";
 
 export default function CustomerMenu() {
   const [filter, setFilter] = useState(null);
@@ -36,22 +36,80 @@ export default function CustomerMenu() {
       .filter((category) => category.items.length > 0);
   }, [menu, categoryFilter, filter, searchQuery]);
 
-  console.log("Filtered Menu:", filteredMenu);
   return (
     <div className="min-h-screen mb-4 bg-gradient-to-br from-slate-50 via-white to-emerald-50/20">
       {isLoading && (
         <div className="flex justify-center items-center min-h-screen">
-          <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+          <FoodLoaderDemo />
         </div>
       )}
-
       {!isLoading && error && (
         <div className="text-center text-red-600 mt-10 font-semibold px-4">
           {error}
         </div>
       )}
+      {!isLoading && !error && data?.success === false && (
+        <div className="flex items-center justify-center min-h-screen px-4 py-12">
+          <div className="relative max-w-lg w-full">
+            {/* Decorative background blobs */}
+            <div className="absolute -top-20 -left-20 w-40 h-40 bg-orange-200/30 rounded-full blur-3xl"></div>
 
-      {!isLoading && !error && (
+            {/* Main card */}
+            <div className="relative bg-white rounded-3xl sm:rounded-[2.5rem] shadow-2xl border border-gray-100 overflow-hidden">
+              {/* Gradient top bar */}
+              <div className="h-2 bg-gradient-to-r from-orange-400 via-red-400 to-pink-400"></div>
+
+              <div className="px-6 py-10 sm:px-10 sm:py-14 text-center">
+                {/* Icon container with animation */}
+                <div className="relative inline-block mb-6 sm:mb-8">
+                  <div className="absolute inset-0 bg-gradient-to-br from-orange-200 to-red-200 rounded-full blur-xl opacity-60 animate-pulse"></div>
+                  <div className="relative flex items-center justify-center w-24 h-24 sm:w-28 sm:h-28 bg-gradient-to-br from-orange-100 via-red-50 to-pink-100 rounded-full border-4 border-white shadow-lg">
+                    <span className="text-5xl sm:text-6xl">🔒</span>
+                  </div>
+                </div>
+
+                {/* Heading */}
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4">
+                  <span className="bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 bg-clip-text text-transparent">
+                    We're Currently Closed
+                  </span>
+                </h2>
+
+                {/* Description */}
+                <p className="text-gray-600 text-base sm:text-lg leading-relaxed mb-6 sm:mb-8 max-w-md mx-auto">
+                  This restaurant is temporarily closed or not under service at
+                  the moment.
+                </p>
+
+                {/* Info box */}
+                <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-4 sm:p-5 border border-orange-100">
+                  <div className="flex items-start gap-3 text-left">
+                    <div className="flex-shrink-0 w-6 h-6 sm:w-7 sm:h-7 bg-gradient-to-br from-orange-400 to-red-400 rounded-full flex items-center justify-center mt-0.5">
+                      <span className="text-white text-sm sm:text-base">
+                        ℹ️
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-gray-700 text-sm sm:text-base font-medium">
+                        Please check back later or contact the restaurant for
+                        more information about opening hours.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Decorative dots */}
+                <div className="flex items-center justify-center gap-2 mt-8 sm:mt-10">
+                  <div className="w-2 h-2 rounded-full bg-orange-300"></div>
+                  <div className="w-2 h-2 rounded-full bg-red-300"></div>
+                  <div className="w-2 h-2 rounded-full bg-pink-300"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {!isLoading && !error && data?.success !== false && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
           {/* Header Section */}
           <div className="mb-2 sm:mb-12">

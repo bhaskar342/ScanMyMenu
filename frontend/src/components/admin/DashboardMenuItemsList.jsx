@@ -154,7 +154,7 @@ export function DashboardMenuItemsList({ menuItems = [] }) {
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500"></div>
 
       {/* Custom Scrollbar Styles */}
-      <style jsx>{`
+      <style jsx="true">{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
         }
