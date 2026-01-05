@@ -9,6 +9,8 @@ dbConnect();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const { contactMessageRoutes } = require("./routes/contactMessageRoutes");
+
 // Routes Import
 const { authRoutes } = require("./routes/authRoutes");
 const { categoryRoutes } = require("./routes/foodCategoryRoutes");
@@ -43,6 +45,7 @@ app.use("/api/settings", settingsRoutes);
 // Super Admin Routes
 app.use("/api/superadmin/restaurants", restaurantRoutes);
 
+app.use("/api/contact", contactMessageRoutes);
 
 // Server Port
 app.listen(PORT, () => {

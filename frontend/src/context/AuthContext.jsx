@@ -97,8 +97,7 @@ export const AuthProvider = ({ children }) => {
         setAuthenticated(true);
         setResCurrency(res.restaurant.currency || "₹");
 
-        if (restaurant.role === "customer") navigate("/");
-        else if (restaurant.role === "admin") navigate("/admin");
+        if (restaurant.role === "admin") navigate("/admin");
         else if (restaurant.role === "superadmin") navigate("/superadmin");
         return { success: true };
       } else {

@@ -28,13 +28,15 @@ import SuperQrCode from "./pages/super-admin/SuperQrCode";
 import SuperCustomer from "./pages/super-admin/SuperCustomer";
 import SuperSettings from "./pages/super-admin/SuperSettings";
 import SuperAdminProvider from "./pages/super-admin/SuperAdminProvider";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
   return (
     <AuthProvider>
       <Routes>
+        <Route path="/" element={<LandingPage/>}/>
         {/* Public / Auth routes */}
-        <Route path="/" element={<LoginPage />} />
+        <Route path="/login" element={<LoginPage />} />
         {/* Admin */}
         <Route
           path="/admin"
