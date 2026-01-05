@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 function ProtectedRoute({ children, allowedRoles = [] }) {
-  const { user, authenticated } = useContext(AuthContext);
+  const { restaurant, authenticated } = useContext(AuthContext);
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
@@ -12,8 +12,8 @@ function ProtectedRoute({ children, allowedRoles = [] }) {
   if (checked && !authenticated) {
     return <Navigate to={"/"} replace />;
   }
-  if (checked && user && allowedRoles && !allowedRoles.includes(user.role)) {
-    return <Navigate to={"/"} replace />;
+  if (checked && restaurant && allowedRoles && !allowedRoles.includes(restaurant.role)) {
+    return <Navigate to={"/404"} replace />;
   }
   return children;
 }

@@ -191,7 +191,11 @@ function AdminQrCode() {
                     <FaDownload size={14} />
                     <span className="text-sm">Download</span>
                   </button>
-
+                  {qr.scanCount !== undefined && (
+                    <span className="text-sm text-gray-500">
+                      Scans: {qr.scanCount}
+                    </span>
+                  )}
                   <button
                     onClick={() => {
                       setConfirmMessage(

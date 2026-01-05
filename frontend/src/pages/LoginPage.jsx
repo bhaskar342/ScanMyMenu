@@ -2,11 +2,10 @@ import { useContext, useState } from "react";
 import { Mail, Lock, Eye, EyeOff, ChefHat } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../context/AuthContext";
-import Loader from "../components/Loader";
 import LoadingDots from "../components/LoadingDots";
 
 const LoginPage = () => {
-  const { loginUser, isLoading } = useContext(AuthContext);
+  const { loginUser } = useContext(AuthContext);
   const {
     register,
     handleSubmit,

@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  Home,
-  QrCode,
-  Users,
-  Bell,
-  ShoppingBag,
-  BarChart3,
-} from "lucide-react";
+import { Home, QrCode, Users } from "lucide-react";
 import SideBar from "../../components/SideBar";
 import Header from "../../components/Header";
 import { Outlet } from "react-router-dom";
@@ -18,7 +11,7 @@ function SuperAdminLayout() {
       icon: Home,
       label: "Home",
       badge: null,
-      path: "superadmin/home",
+      path: "superadmin/dashboard",
     },
     {
       id: "qr-codes",
@@ -28,11 +21,11 @@ function SuperAdminLayout() {
       path: "superadmin/qr-codes",
     },
     {
-      id: "customers",
+      id: "Restaurants",
       icon: Users,
-      label: "Customers",
+      label: "Restaurants",
       badge: null,
-      path: "superadmin/customers",
+      path: "superadmin/restaurants",
     },
   ];
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -51,11 +44,9 @@ function SuperAdminLayout() {
         role={"superadmin"}
       />
       {/* Main Content */}
-      <main className="pt-16 lg:pl-72 min-h-screen bg-emerald-50">
-        <div className="px-3 px-sm-4">
-          <Outlet />
-        </div>
-      </main>
+      <div className="sm:pt-20 px-3 px-sm-4">
+        <Outlet />
+      </div>
     </div>
   );
 }

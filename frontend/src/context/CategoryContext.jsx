@@ -66,7 +66,6 @@ export const CategoryProvider = ({ children }) => {
 
       const res = await r.json();
       console.log("Categories:", res);
-
       if (res.success) {
         setCategories(res.categories);
       }

@@ -23,6 +23,11 @@ import CustomerProviders from "./pages/public/CustomerProviders";
 
 // SUPER-ADMIN
 import SuperAdminLayout from "./pages/super-admin/SuperAdminLayout";
+import SuperDashboard from "./pages/super-admin/SuperDashboard";
+import SuperQrCode from "./pages/super-admin/SuperQrCode";
+import SuperCustomer from "./pages/super-admin/SuperCustomer";
+import SuperSettings from "./pages/super-admin/SuperSettings";
+import SuperAdminProvider from "./pages/super-admin/SuperAdminProvider";
 
 function App() {
   return (
@@ -65,10 +70,18 @@ function App() {
           path="/superadmin"
           element={
             <ProtectedRoute allowedRoles={["superadmin"]}>
-              <SuperAdminLayout />
+              <SuperAdminProvider>
+                <SuperAdminLayout />
+              </SuperAdminProvider>
             </ProtectedRoute>
           }
-        ></Route>
+        >
+          <Route index element={<SuperDashboard />} />
+          <Route path="dashboard" element={<SuperDashboard />} />
+          <Route path="qr-codes" element={<SuperQrCode />} />
+          <Route path="restaurants" element={<SuperCustomer />} />
+          <Route path="settings" element={<SuperSettings />} />
+        </Route>
 
         <Route path="*" element={<Page404 />} />
       </Routes>

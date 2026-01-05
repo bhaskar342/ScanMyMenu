@@ -35,7 +35,8 @@ export default function CustomerMenu() {
       }))
       .filter((category) => category.items.length > 0);
   }, [menu, categoryFilter, filter, searchQuery]);
-
+  console.log("data", data);
+  const currency = data?.restaurant?.currency || "₹";
   return (
     <div className="min-h-screen mb-4 bg-gradient-to-br from-slate-50 via-white to-emerald-50/20">
       {isLoading && (
@@ -48,6 +49,7 @@ export default function CustomerMenu() {
           {error}
         </div>
       )}
+
       {!isLoading && !error && data?.success === false && (
         <div className="flex items-center justify-center min-h-screen px-4 py-12">
           <div className="relative max-w-lg w-full">
@@ -109,6 +111,7 @@ export default function CustomerMenu() {
           </div>
         </div>
       )}
+
       {!isLoading && !error && data?.success !== false && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
           {/* Header Section */}
@@ -165,7 +168,6 @@ export default function CustomerMenu() {
               ))}
             </div>
           </div>
-
           {/* Menu Items Grid */}
           {filteredMenu.length > 0 ? (
             <div className="space-y-5 sm:space-y-14">
@@ -243,28 +245,38 @@ export default function CustomerMenu() {
                             {item.name || "NA"}
                           </h3>
 
-                          <div className="flex items-end justify-between ">
-                            <div className="flex flex-col">
+                          <div className="flex items-end justify-between relative">
+                            <div className="flex flex-col gap-1">
+                              {/* Display Price - either discounted or base */}
                               <span className="text-2xl sm:text-3xl font-bold text-emerald-600">
-                                ₹{item.discountedPrice || "NA"}
+                                {currency}
+                                {item.discountedPrice &&
+                                item.basePrice !== item.discountedPrice
+                                  ? item.discountedPrice
+                                  : item.basePrice || "NA"}
                               </span>
-                              {item.basePrice !== item.discountedPrice && (
-                                <span className="text-sm text-gray-400 line-through">
-                                  ₹{item.basePrice || "NA"}
-                                </span>
-                              )}
-                            </div>
 
-                            {item.basePrice !== item.discountedPrice && (
-                              <div className="bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full">
-                                {Math.round(
-                                  ((item.basePrice - item.discountedPrice) /
-                                    item.basePrice) *
-                                    100
+                              {/* Original Price - shown only when discounted */}
+                              {item.discountedPrice &&
+                                item.basePrice !== item.discountedPrice && (
+                                  <span className="text-sm text-gray-400 line-through">
+                                    {currency}{item.basePrice || "NA"}
+                                  </span>
                                 )}
-                                % OFF
-                              </div>
-                            )}
+
+                              {/* Discount Badge - shown only when discounted */}
+                              {item.discountedPrice &&
+                                item.basePrice !== item.discountedPrice && (
+                                  <div className="absolute bottom-0 right-0 bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full w-fit">
+                                    {Math.round(
+                                      ((item.basePrice - item.discountedPrice) /
+                                        item.basePrice) *
+                                        100
+                                    )}
+                                    % OFF
+                                  </div>
+                                )}
+                            </div>
                           </div>
                         </div>
                       </div>

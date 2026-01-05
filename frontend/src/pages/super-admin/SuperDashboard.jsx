@@ -1,7 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
+import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+import RestaurantDetailCard from "../../components/superadmin/RestaurantsDetail";
+import { RestaurantContext } from "../../context/SuperAdminContext/RestaurantsContext";
+import { Loader } from "lucide-react";
 
-function SuperDashboard() {
+export default function SuperAdminDashboard() {
+  const { restaurants, isResLoading } = useContext(RestaurantContext);
   const { signUpUser, isLoading } = useContext(AuthContext);
   const {
     register,
@@ -21,31 +27,14 @@ function SuperDashboard() {
       setError("root", { message: result.message });
     }
   };
-
   return (
-    <div>
-      {/* Sign Up Link */}
+    <div className="p-4 md:p-6 space-y-6">
+      {!isLoading &&
+        restaurants.map((restaurant) => (
+          <RestaurantDetailCard key={restaurant._id} restaurant={restaurant} />
+        ))}
+
       <div className="mt-6">
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
-          </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">
-              Don't have an account?
-            </span>
-          </div>
-        </div>
-
-        <div className="mt-6">
-          <Link
-            to="/signup"
-            className="w-full text-decoration-none block text-center py-2.5 px-4 rounded-lg shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-300"
-          >
-            Create new account
-          </Link>
-        </div>
-
         <div className="min-h-screen bg-emerald-50 py-8 px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
           <div className="max-w-2xl mx-auto w-full">
             {/* Header */}
@@ -74,7 +63,7 @@ function SuperDashboard() {
                     {/* Restaurant Name */}
                     <div>
                       <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                        <FaStore className="w-4 h-4 mr-2 text-emerald-600" />
+                        {/* <FaStore className="w-4 h-4 mr-2 text-emerald-600" /> */}
                         Restaurant Name
                       </label>
                       <input
@@ -97,7 +86,7 @@ function SuperDashboard() {
                     {/* Owner Name */}
                     <div>
                       <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                        <FaUser className="w-4 h-4 mr-2 text-emerald-600" />
+                        {/* <FaUser className="w-4 h-4 mr-2 text-emerald-600" /> */}
                         Owner Name
                       </label>
                       <input
@@ -122,7 +111,7 @@ function SuperDashboard() {
                       {/* Email */}
                       <div>
                         <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                          <FaEnvelope className="w-4 h-4 mr-2 text-emerald-600" />
+                          {/* <FaEnvelope className="w-4 h-4 mr-2 text-emerald-600" /> */}
                           Email Address
                         </label>
                         <input
@@ -149,7 +138,7 @@ function SuperDashboard() {
                       {/* Phone */}
                       <div>
                         <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                          <FaPhone className="w-4 h-4 mr-2 text-emerald-600" />
+                          {/* <FaPhone className="w-4 h-4 mr-2 text-emerald-600" /> */}
                           Phone Number
                         </label>
                         <input
@@ -181,7 +170,7 @@ function SuperDashboard() {
                       {/* Password */}
                       <div>
                         <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                          <FaLock className="w-4 h-4 mr-2 text-emerald-600" />
+                          {/* <FaLock className="w-4 h-4 mr-2 text-emerald-600" /> */}
                           Password
                         </label>
                         <input
@@ -210,7 +199,7 @@ function SuperDashboard() {
                       {/* Confirm Password */}
                       <div>
                         <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                          <FaLock className="w-4 h-4 mr-2 text-emerald-600" />
+                          {/* <FaLock className="w-4 h-4 mr-2 text-emerald-600" /> */}
                           Confirm Password
                         </label>
                         <input
@@ -239,7 +228,7 @@ function SuperDashboard() {
                     {/* Address */}
                     <div>
                       <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                        <FaMapMarkerAlt className="w-4 h-4 mr-2 text-emerald-600" />
+                        {/* <FaMapMarkerAlt className="w-4 h-4 mr-2 text-emerald-600" /> */}
                         Restaurant Address
                       </label>
                       <textarea
@@ -250,32 +239,6 @@ function SuperDashboard() {
                       />
                     </div>
 
-                    {/* Role Selector */}
-                    {/* <div>
-                  <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-                    Role
-                  </label>
-                  <select
-                    {...register("role")}
-                    className={`w-full px-4 py-2.5 rounded-lg border ${
-                      errors.role ? "border-red-500" : "border-gray-200"
-                    } focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm sm:text-base`}
-                    defaultValue=""
-                  >
-                    <option value="" disabled>
-                      Select a role
-                    </option>
-                    <option value="admin">Admin</option>
-                    <option value="superadmin">Superadmin</option>
-                    <option value="customer">Customer</option>
-                  </select>
-                  {errors.role && (
-                    <p className="mt-1 text-red-500 text-xs">
-                      {errors.role.message}
-                    </p>
-                  )}
-                </div> */}
-
                     {/* Submit Button */}
                     <button
                       type="submit"
@@ -284,17 +247,6 @@ function SuperDashboard() {
                     >
                       {isSubmitting ? "Creating Account..." : "Create Account"}
                     </button>
-
-                    {/* Login Link */}
-                    <p className="text-center text-sm text-gray-600 mt-3">
-                      Already have an account?
-                      <Link
-                        to="/"
-                        className="ms-2 text-decoration-none rounded-md px-3 py-2 hover:text-emerald-700 text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-300 font-medium"
-                      >
-                        Log in here
-                      </Link>
-                    </p>
                   </form>
                 </div>
               )}
@@ -305,5 +257,3 @@ function SuperDashboard() {
     </div>
   );
 }
-
-export default SuperDashboard;

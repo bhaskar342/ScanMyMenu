@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [authenticated, setAuthenticated] = useState(false);
   const [token, setToken] = useState("");
   const [restaurant, setRestaurant] = useState(null);
-
+  const [resCurrency, setResCurrency] = useState("₹");
   // ✅ Utility to check if JWT is expired
   const isTokenExpired = (token) => {
     try {
@@ -95,13 +95,13 @@ export const AuthProvider = ({ children }) => {
         setToken(token);
         setRestaurant(restaurant);
         setAuthenticated(true);
+        setResCurrency(res.restaurant.currency || "₹");
 
         if (restaurant.role === "customer") navigate("/");
         else if (restaurant.role === "admin") navigate("/admin");
-        else if (restaurant.role === "superadmin") navigate("/super-admin");
+        else if (restaurant.role === "superadmin") navigate("/superadmin");
         return { success: true };
-      }
-       else {
+      } else {
         return { success: false, message: res.message || "Login failed" };
       }
     } catch (error) {

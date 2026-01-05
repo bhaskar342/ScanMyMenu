@@ -16,6 +16,12 @@ const { menuItemRoutes } = require("./routes/MenuItemRoutes");
 const { tableRoutes } = require("./routes/TableRoutes");
 const { publicRoutes } = require("./routes/publicRoutes");
 const { settingsRoutes } = require("./routes/settingsRoutes");
+
+// Super Admin Routes Import
+const {
+  restaurantRoutes,
+} = require("./routes/SuperAdminRoutes/restaurantRoutes");
+
 // app.use(
 //   cors({
 //     origin: "tasty-tokens.vercel.app",
@@ -33,6 +39,10 @@ app.use("/api/category", categoryRoutes);
 app.use("/api/menu", menuItemRoutes);
 app.use("/api/table", tableRoutes);
 app.use("/api/settings", settingsRoutes);
+
+// Super Admin Routes
+app.use("/api/superadmin/restaurants", restaurantRoutes);
+
 
 // Server Port
 app.listen(PORT, () => {

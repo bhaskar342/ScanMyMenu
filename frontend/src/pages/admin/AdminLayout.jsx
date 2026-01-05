@@ -3,7 +3,6 @@ import SideBar from "../../components/SideBar";
 import Header from "../../components/Header";
 import { Outlet } from "react-router-dom";
 import { useState } from "react";
-import { FaUtensils, FaPlus } from "react-icons/fa";
 
 function AdminLayout() {
   const sidebaritems = [
