@@ -69,6 +69,8 @@ export default function AdminMenuItems() {
       setErrorMessage(result.message || "Failed to delete category.");
     }
   };
+  const { resCurrency } = useContext(AuthContext);
+  console.log("Currency in MenuItemCard:", resCurrency);
 
   return (
     <div className="container-fluid">
@@ -119,7 +121,9 @@ export default function AdminMenuItems() {
               }}
             >
               <FaPlus className="w-3 h-3" />
-              <span className="text-base sm:text-sm md:text-xs lg:text-lg">Add Category</span>
+              <span className="text-base sm:text-sm md:text-xs lg:text-lg">
+                Add Category
+              </span>
             </button>
           </div>
 
@@ -221,6 +225,7 @@ export default function AdminMenuItems() {
               categories={categories}
               onEdit={onEdit}
               onDelete={onDelete}
+              resCurrency={resCurrency}
               selectedCategory={selectedCategory}
               toggleAvailability={toggleAvailability}
             />

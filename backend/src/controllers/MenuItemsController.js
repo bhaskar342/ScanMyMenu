@@ -124,6 +124,7 @@ exports.postAddMenuItems = async (req, res) => {
 exports.getAllMenuItems = async (req, res) => {
   try {
     const restaurantId = req.user.restaurantId; // MUST be correct
+    
     const items = await MenuItem.find({ restaurantId })
       .populate("category")
       .lean();

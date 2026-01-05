@@ -1,15 +1,28 @@
-import { FaQrcode, FaMobileAlt, FaCloud, FaGlobe } from "react-icons/fa";
+import {
+  FaQrcode,
+  FaMobileAlt,
+  FaCloud,
+  FaGlobe,
+  FaInstagram,
+  FaFacebook,
+} from "react-icons/fa";
 import { Sparkles, Zap } from "lucide-react";
-import { FaInstagram, FaFacebook } from "react-icons/fa";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-const BASE_API = import.meta.env.VITE_BASE_API;
-import PrivacyPolicyModal from "../components/PrivacyPolicyModal";
-
+import logo from "../assets/logo.png";
 export default function LandingPage() {
+  const navigate = useNavigate();
   const socialLinks = [
-    { name: "Facebook", url: "#", icon: <FaFacebook /> },
-    { name: "Instagram", url: "#", icon: <FaInstagram /> },
+    {
+      name: "Facebook",
+      url: "https://www.instagram.com/scan.mymenu/",
+      icon: <FaFacebook />,
+    },
+    {
+      name: "Instagram",
+      url: "https://www.instagram.com/scan.mymenu/",
+      icon: <FaInstagram />,
+    },
   ];
 
   const [form, setForm] = useState({
@@ -19,7 +32,6 @@ export default function LandingPage() {
     restaurantName: "",
     message: "",
   });
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
@@ -60,23 +72,15 @@ export default function LandingPage() {
     setError(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
-      return; // ❌ Stop submission
+      return;
     }
 
     setLoading(true);
     setError("");
     setSuccess(false);
     try {
-      const res = await fetch(`${BASE_API}/api/contact/send`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.message || "Something went wrong");
-
+      // Simulated API call
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       setSuccess(true);
       setForm({
         firstName: "",
@@ -93,40 +97,37 @@ export default function LandingPage() {
   };
 
   const handlePricingClick = () => {
-    // 1. Scroll to contact section
     document.getElementById("contact-us")?.scrollIntoView({
       behavior: "smooth",
     });
 
-    // 2. Blink WhatsApp after scroll
     setTimeout(() => {
       const whatsappCard = document.getElementById("whatsapp-cta");
       if (whatsappCard) {
         whatsappCard.classList.add("blink-highlight");
-
-        // Remove class after animation finishes
         setTimeout(() => {
           whatsappCard.classList.remove("blink-highlight");
         }, 3000);
       }
-    }, 600); // delay so scroll finishes first
+    }, 600);
   };
 
   return (
-    <div className="bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
+    <div className="bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white overflow-x-hidden">
       {/* NAVBAR */}
-      <nav className="fixed top-0 w-full bg-slate-950/80 backdrop-blur-md z-50 border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+      <nav className="sm:fixed top-0 w-full bg-slate-950 backdrop-blur-md z-50 border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <div className="bg-gradient-to-br from-emerald-400 to-teal-500 p-2 rounded-lg">
-              <FaQrcode className="w-5 h-5 text-white" />
-              <img src="/curv-bg.png" alt="" />
-            </div>
+            <img
+              src={logo}
+              alt="ScanMyMenu Logo"
+              className="w-10 h-10 object-contain"
+            />
             <span className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
               ScanMyMenu
             </span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() =>
                 document.getElementById("features")?.scrollIntoView({
@@ -158,13 +159,13 @@ export default function LandingPage() {
               Contact Us
             </button>
             <button
-              className="text-sm px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 font-semibold shadow-lg shadow-emerald-500/20 transition"
+              className="text-xs sm:text-sm px-3 sm:px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 font-semibold shadow-lg shadow-emerald-500/20 transition"
               onClick={() => navigate("/login")}
             >
               Login
             </button>
             <button
-              className="text-sm px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 font-semibold shadow-lg shadow-emerald-500/20 transition"
+              className="hidden sm:block text-sm px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 font-semibold shadow-lg shadow-emerald-500/20 transition"
               onClick={handlePricingClick}
             >
               Get Started
@@ -174,62 +175,65 @@ export default function LandingPage() {
       </nav>
 
       {/* HERO */}
-      <section className="relative overflow-hidden pt-32 pb-20 px-4 sm:px-6">
+      <section className="relative overflow-hidden py-8 sm:pt-32 sm:pb-20 px-4 sm:px-6">
         {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden">
+        <div className="hidden sm:block absolute inset-0 overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-pulse"></div>
         </div>
 
         <div className="max-w-7xl mx-auto relative">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-4 py-2 mb-8">
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-              <span className="text-sm text-emerald-300">
+            <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 mb-6 sm:mb-8">
+              <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-400" />
+              <span className="text-xs sm:text-sm text-emerald-300">
                 Trusted by 100+ restaurants
               </span>
             </div>
 
-            <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold leading-tight mb-6">
+            <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-4 sm:mb-6 px-2">
               Your Menu,
               <span className="block bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
                 Always Up-to-Date
               </span>
             </h1>
 
-            <p className="text-lg sm:text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-8 sm:mb-10 max-w-2xl mx-auto px-2">
               Create stunning QR menus in minutes. Update instantly. Delight
               your customers with a seamless digital experience — no apps
               required.
             </p>
 
-            <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
+            <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 mb-12 sm:mb-16 px-4">
               <button
-                className="group px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl font-semibold shadow-xl shadow-emerald-500/25 hover:shadow-2xl hover:shadow-emerald-500/40 transition-all hover:scale-105"
+                className="group px-6 py-3 sm:px-8 sm:py-4 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl font-semibold shadow-xl shadow-emerald-500/25 hover:shadow-2xl hover:shadow-emerald-500/40 transition-all hover:scale-105 text-sm sm:text-base"
                 onClick={handlePricingClick}
               >
                 Start Free Trial
-                <Zap className="inline-block ml-2 w-5 h-5" />
+                <Zap className="inline-block ml-2 w-4 h-4 sm:w-5 sm:h-5" />
               </button>
-              <button className="px-8 py-4 bg-slate-800 hover:bg-slate-700 rounded-xl font-semibold border border-slate-700 hover:border-slate-600 transition-all">
-                View Demo
+              <button
+                className="px-6 py-3 sm:px-8 sm:py-4 bg-slate-800 hover:bg-slate-700 rounded-xl font-semibold border border-slate-700 hover:border-slate-600 transition-all text-sm sm:text-base"
+                onClick={handlePricingClick}
+              >
+                Ask for Demo
               </button>
             </div>
 
             {/* Hero Visual */}
-            <div className="relative max-w-4xl mx-auto">
+            <div className="relative max-w-4xl mx-auto px-2">
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 blur-3xl"></div>
-              <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl shadow-2xl p-8 sm:p-12 border border-slate-700">
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <div className="bg-slate-950 rounded-2xl p-6 border border-emerald-500/20 hover:border-emerald-500/40 transition-all">
-                    <FaQrcode className="text-emerald-400 w-20 h-20 mx-auto mb-4" />
-                    <p className="text-center text-gray-300 font-medium">
+              <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl sm:rounded-3xl shadow-2xl p-4 sm:p-8 md:p-12 border border-slate-700">
+                <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                  <div className="bg-slate-950 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-emerald-500/20 hover:border-emerald-500/40 transition-all">
+                    <FaQrcode className="text-emerald-400 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto mb-3 sm:mb-4" />
+                    <p className="text-center text-gray-300 font-medium text-sm sm:text-base">
                       Scan & View Instantly
                     </p>
                   </div>
-                  <div className="bg-slate-950 rounded-2xl p-6 border border-teal-500/20 hover:border-teal-500/40 transition-all">
-                    <FaMobileAlt className="text-teal-400 w-20 h-20 mx-auto mb-4" />
-                    <p className="text-center text-gray-300 font-medium">
+                  <div className="bg-slate-950 rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-teal-500/20 hover:border-teal-500/40 transition-all">
+                    <FaMobileAlt className="text-teal-400 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto mb-3 sm:mb-4" />
+                    <p className="text-center text-gray-300 font-medium text-sm sm:text-base">
                       Mobile-First Design
                     </p>
                   </div>
@@ -241,9 +245,9 @@ export default function LandingPage() {
       </section>
 
       {/* STATS */}
-      <section className="py-20 px-4 sm:px-6">
+      <section className="py-8 sm:py-20 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="grid sm:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8">
             <StatCard number="50K+" label="Menus Created" />
             <StatCard number="2M+" label="QR Scans Monthly" />
             <StatCard number="99.9%" label="Uptime" />
@@ -252,21 +256,24 @@ export default function LandingPage() {
       </section>
 
       {/* FEATURES */}
-      <section id="features" className="py-20 px-4 sm:px-6 scroll-mt-24">
+      <section
+        id="features"
+        className="py-8 sm:py-20 px-4 sm:px-6 scroll-mt-24"
+      >
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold mb-4">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
               Powerful Features,
               <span className="block bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
                 Simple to Use
               </span>
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-400 text-base sm:text-lg max-w-2xl mx-auto px-4">
               Everything you need to create and manage beautiful digital menus
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <FeatureCard
               icon={<FaQrcode />}
               title="One-Time QR Code"
@@ -296,18 +303,18 @@ export default function LandingPage() {
       </section>
 
       {/* HOW IT WORKS */}
-      <section className="py-20 px-4 sm:px-6 bg-gradient-to-b from-slate-900 to-slate-950">
+      <section className="py-8 sm:py-20 px-4 sm:px-6 bg-gradient-to-b from-slate-900 to-slate-950">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold mb-4">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
               Launch in Minutes
             </h2>
-            <p className="text-gray-400 text-lg">
+            <p className="text-gray-400 text-base sm:text-lg">
               Simple setup, powerful results
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <StepCard
               number="1"
               title="Sign Up"
@@ -333,15 +340,15 @@ export default function LandingPage() {
       </section>
 
       {/* SOCIAL PROOF */}
-      <section className="py-20 px-4 sm:px-6">
+      <section className="py-8 sm:py-20 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
               Loved by Restaurant Owners
             </h2>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
             <Testimonial
               text="Switching to ScanMyMenu was the best decision. Our customers love the digital experience!"
               author="Sarah Chen"
@@ -364,20 +371,20 @@ export default function LandingPage() {
       {/* PRICING */}
       <section
         id="pricing"
-        className="py-20 px-4 sm:px-6 bg-gradient-to-b from-slate-900 to-slate-950"
+        className="py-12 sm:py-20 px-4 sm:px-6 bg-gradient-to-b from-slate-900 to-slate-950"
       >
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold mb-4">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
               Simple, Transparent Pricing
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-2">
               Choose the perfect plan for your restaurant. All plans include
               unlimited updates. <br /> All prices are free to <b>Negotiate</b>
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
             {/* Starter Plan */}
             <PricingCard
               name="Starter"
@@ -407,7 +414,6 @@ export default function LandingPage() {
                 "Unlimited menu updates",
                 "Advanced analytics",
                 "Mobile optimized",
-
                 "Priority support",
               ]}
               buttonText="Start Free Trial"
@@ -435,11 +441,11 @@ export default function LandingPage() {
             />
           </div>
 
-          <div className="mt-16 text-center">
-            <p className="text-gray-400 mb-6">
+          <div className="mt-12 sm:mt-16 text-center">
+            <p className="text-gray-400 mb-4 sm:mb-6 text-sm sm:text-base">
               All plans include a 14-day free trial. No credit card required.
             </p>
-            <div className="flex flex-wrap justify-center gap-8 text-sm text-gray-500">
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-8 text-xs sm:text-sm text-gray-500">
               <div className="flex items-center gap-2">
                 <span className="text-emerald-400">✓</span>
                 <span>Cancel anytime</span>
@@ -458,24 +464,24 @@ export default function LandingPage() {
       </section>
 
       {/* CONTACT US */}
-      <section id="contact-us" className="py-20 px-4 sm:px-6">
+      <section id="contact-us" className="py-8 sm:py-20 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold mb-4">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
               Get in Touch
             </h2>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-gray-400 text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-2">
               Have questions? We'd love to hear from you. Send us a message and
               we'll respond as soon as possible.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-2 gap-12">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12">
             {/* Contact Form */}
-            <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800">
-              <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="bg-slate-900 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-800">
+              <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit}>
                 {/* Name */}
-                <div className="grid sm:grid-cols-2 gap-6">
+                <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
                   <div>
                     <label className="block text-sm font-medium mb-2 text-gray-300">
                       First Name
@@ -486,7 +492,7 @@ export default function LandingPage() {
                       value={form.firstName}
                       onChange={handleChange}
                       placeholder="John"
-                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition"
+                      className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition text-sm sm:text-base"
                     />
                     {error.firstName && (
                       <p className="text-xs text-red-400 mt-1">
@@ -505,7 +511,7 @@ export default function LandingPage() {
                       value={form.lastName}
                       onChange={handleChange}
                       placeholder="Doe"
-                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition"
+                      className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition text-sm sm:text-base"
                     />
                     {error.lastName && (
                       <p className="text-xs text-red-400 mt-1">
@@ -526,7 +532,7 @@ export default function LandingPage() {
                     value={form.email}
                     onChange={handleChange}
                     placeholder="john@example.com"
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition text-sm sm:text-base"
                   />
                   {error.email && (
                     <p className="text-xs text-red-400 mt-1">{error.email}</p>
@@ -544,7 +550,7 @@ export default function LandingPage() {
                     value={form.message}
                     onChange={handleChange}
                     placeholder="Tell us how we can help..."
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition resize-none"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 transition resize-none text-sm sm:text-base"
                   />
                   {error.message && (
                     <p className="text-xs text-red-400 mt-1">{error.message}</p>
@@ -554,7 +560,7 @@ export default function LandingPage() {
                 {/* Feedback */}
                 {success && (
                   <p className="text-sm text-emerald-400">
-                    ✅ Message sent successfully. We’ll get back to you soon.
+                    ✅ Message sent successfully. We'll get back to you soon.
                   </p>
                 )}
 
@@ -565,7 +571,7 @@ export default function LandingPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 rounded-xl font-semibold shadow-lg shadow-emerald-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-3 sm:py-4 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 rounded-xl font-semibold shadow-lg shadow-emerald-500/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                 >
                   {loading ? "Sending..." : "Send Message"}
                 </button>
@@ -573,16 +579,16 @@ export default function LandingPage() {
             </div>
 
             {/* Contact Information */}
-            <div className="space-y-8">
-              <div className="bg-slate-900 rounded-3xl p-8 border border-slate-800 hover:border-emerald-500/30 transition-all">
+            <div className="space-y-6 sm:space-y-8">
+              <div className="bg-slate-900 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-slate-800 hover:border-emerald-500/30 transition-all">
                 <div className="flex items-start gap-4">
                   <a
                     href="mailto:help.scanmymenu@gmail.com"
                     className="flex items-start gap-4 cursor-pointer"
                   >
-                    <div className="bg-gradient-to-br from-emerald-500 to-teal-500 p-3 rounded-xl">
+                    <div className="bg-gradient-to-br from-emerald-500 to-teal-500 p-2.5 sm:p-3 rounded-xl">
                       <svg
-                        className="w-6 h-6 text-white"
+                        className="w-5 h-5 sm:w-6 sm:h-6 text-white"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -597,8 +603,12 @@ export default function LandingPage() {
                     </div>
 
                     <div>
-                      <h3 className="text-xl font-semibold mb-2">Email Us</h3>
-                      <p className="text-gray-400">help.scanmymenu@gmail.com</p>
+                      <h3 className="text-lg sm:text-xl font-semibold mb-1 sm:mb-2">
+                        Email Us
+                      </h3>
+                      <p className="text-gray-400 text-sm sm:text-base break-all">
+                        help.scanmymenu@gmail.com
+                      </p>
                     </div>
                   </a>
                 </div>
@@ -645,7 +655,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 px-4 sm:px-6 relative overflow-hidden">
+      <section className="py-12 sm:py-20 px-4 sm:px-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 to-teal-600 opacity-90"></div>
         <div className="absolute inset-0">
           <div className="absolute top-1/4 left-1/3 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
@@ -653,25 +663,25 @@ export default function LandingPage() {
         </div>
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h2 className="text-4xl sm:text-5xl font-bold mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
             Ready to Transform Your Menu?
           </h2>
-          <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-white/90 mb-8 sm:mb-10 max-w-2xl mx-auto px-2">
             Join thousands of restaurants already using ScanMyMenu. Start your
             free trial today — no credit card required.
           </p>
 
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
             <button
-              className="group px-8 py-4 bg-white text-emerald-600 rounded-xl font-bold shadow-2xl hover:shadow-white/20 transition-all hover:scale-105"
+              className="group px-6 py-3 sm:px-8 sm:py-4 bg-white text-emerald-600 rounded-xl font-bold shadow-2xl hover:shadow-white/20 transition-all hover:scale-105 text-sm sm:text-base"
               onClick={handlePricingClick}
             >
               Start Free Trial
-              <Sparkles className="inline-block ml-2 w-5 h-5" />
+              <Sparkles className="inline-block ml-2 w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
 
-          <p className="mt-8 text-sm text-white/70">
+          <p className="mt-6 sm:mt-8 text-xs sm:text-sm text-white/70">
             ✓ 14-day free trial ✓ No credit card needed ✓ Cancel anytime
           </p>
         </div>
@@ -679,15 +689,15 @@ export default function LandingPage() {
 
       {/* FOOTER */}
       <footer className="bg-slate-950 border-t border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
           {/* Top Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10 items-start">
             {/* Brand */}
             <div>
-              <h2 className="text-2xl font-bold text-white">
+              <h2 className="text-xl sm:text-2xl font-bold text-white">
                 Scan<span className="text-emerald-500">My</span>Menu
               </h2>
-              <p className="mt-3 text-sm text-slate-400 max-w-xs">
+              <p className="mt-2 sm:mt-3 text-xs sm:text-sm text-slate-400 max-w-xs">
                 Simple QR menus for modern restaurants. Create once, update
                 anytime — no reprints ever.
               </p>
@@ -695,10 +705,10 @@ export default function LandingPage() {
 
             {/* Links */}
             <div>
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wide mb-4">
+              <h3 className="text-xs sm:text-sm font-semibold text-white uppercase tracking-wide mb-3 sm:mb-4">
                 Product
               </h3>
-              <ul className="space-y-3 text-sm text-slate-400">
+              <ul className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-slate-400">
                 <li className="hover:text-emerald-500 transition">
                   <button
                     onClick={() =>
@@ -706,7 +716,7 @@ export default function LandingPage() {
                         behavior: "smooth",
                       })
                     }
-                    className="hidden sm:block text-sm text-gray-300 hover:text-white transition"
+                    className="text-gray-300 hover:text-white transition"
                   >
                     Features
                   </button>
@@ -718,7 +728,7 @@ export default function LandingPage() {
                         behavior: "smooth",
                       })
                     }
-                    className="hidden sm:block text-sm text-gray-300 hover:text-white transition"
+                    className="text-gray-300 hover:text-white transition"
                   >
                     Pricing
                   </button>
@@ -730,7 +740,7 @@ export default function LandingPage() {
                         behavior: "smooth",
                       })
                     }
-                    className="hidden sm:block text-sm text-gray-300 hover:text-white transition"
+                    className="text-gray-300 hover:text-white transition"
                   >
                     Contact Us
                   </button>
@@ -740,15 +750,16 @@ export default function LandingPage() {
 
             {/* Social */}
             <div>
-              <h3 className="text-sm font-semibold text-white uppercase tracking-wide mb-4">
+              <h3 className="text-xs sm:text-sm font-semibold text-white uppercase tracking-wide mb-3 sm:mb-4">
                 Follow Us
               </h3>
-              <div className="flex gap-3">
+              <div className="flex gap-2 sm:gap-3">
                 {socialLinks.map((social, i) => (
                   <a
                     key={i}
-                    href="#"
-                    className="p-3 rounded-xl bg-slate-800 hover:bg-emerald-500 transition"
+                    target="_blank"
+                    href={social.url}
+                    className="p-2.5 sm:p-3 rounded-xl bg-slate-800 hover:bg-emerald-500 transition"
                   >
                     {social.icon}
                   </a>
@@ -758,12 +769,8 @@ export default function LandingPage() {
           </div>
 
           {/* Divider */}
-          <div className="border-t border-slate-800 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-slate-500">
-              © {new Date().getFullYear()} ScanMyMenu. All rights reserved.
-            </p>
-
-            <div className="flex gap-6 text-xs text-slate-500">
+          <div className="border-t border-slate-800 mt-6 sm:mt-12 pt-4 sm:pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+            <div className="flex gap-4 sm:gap-6 text-xs text-slate-500">
               <button
                 onClick={() => setOpenPrivacy(true)}
                 className="hover:text-emerald-500 cursor-pointer"
@@ -771,38 +778,74 @@ export default function LandingPage() {
                 Privacy Policy
               </button>
             </div>
+            <p className="text-xs text-slate-500">
+              © {new Date().getFullYear()} ScanMyMenu. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
-      <PrivacyPolicyModal
-        open={openPrivacy}
-        onClose={() => setOpenPrivacy(false)}
-      />
+
+      {openPrivacy && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 rounded-2xl p-6 max-w-2xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold">Privacy Policy</h3>
+              <button
+                onClick={() => setOpenPrivacy(false)}
+                className="text-gray-400 hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+            <p className="text-gray-400 text-sm">
+              Your privacy policy content goes here...
+            </p>
+          </div>
+        </div>
+      )}
+
+      <style jsx="true">{`
+        @keyframes blink {
+          0%,
+          100% {
+            box-shadow: 0 0 0 rgba(16, 185, 129, 0);
+            transform: scale(1);
+          }
+          50% {
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.9);
+            transform: scale(1.03);
+          }
+        }
+        .blink-highlight {
+          animation: blinkGlow 1s ease-in-out 3;
+          border-color: rgb(16 185 129);
+        }
+      `}</style>
     </div>
   );
 }
 
 function StatCard({ number, label }) {
   return (
-    <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 text-center border border-slate-700 hover:border-emerald-500/50 transition-all">
-      <div className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent mb-2">
+    <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center border border-slate-700 hover:border-emerald-500/50 transition-all">
+      <div className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent mb-2">
         {number}
       </div>
-      <div className="text-gray-400">{label}</div>
+      <div className="text-gray-400 text-sm sm:text-base">{label}</div>
     </div>
   );
 }
 
 function FeatureCard({ icon, title, text, gradient }) {
   return (
-    <div className="group bg-slate-900 rounded-2xl p-6 border border-slate-800 hover:border-slate-700 transition-all hover:scale-105">
+    <div className="group bg-slate-900 rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-slate-800 hover:border-slate-700 transition-all hover:scale-105">
       <div
-        className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${gradient} mb-4 group-hover:scale-110 transition-transform`}
+        className={`inline-flex p-2.5 sm:p-3 rounded-xl bg-gradient-to-br ${gradient} mb-3 sm:mb-4 group-hover:scale-110 transition-transform`}
       >
-        <div className="text-white text-2xl">{icon}</div>
+        <div className="text-white text-xl sm:text-2xl">{icon}</div>
       </div>
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-gray-400 text-sm leading-relaxed">{text}</p>
+      <h3 className="text-lg sm:text-xl font-semibold mb-2">{title}</h3>
+      <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">{text}</p>
     </div>
   );
 }
@@ -810,12 +853,14 @@ function FeatureCard({ icon, title, text, gradient }) {
 function StepCard({ number, title, text }) {
   return (
     <div className="relative">
-      <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700 hover:border-emerald-500/50 transition-all">
-        <div className="absolute -top-4 -left-4 w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center font-bold text-lg shadow-lg">
+      <div className="bg-slate-800 rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-slate-700 hover:border-emerald-500/50 transition-all">
+        <div className="absolute -top-3 sm:-top-4 -left-3 sm:-left-4 w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full flex items-center justify-center font-bold text-base sm:text-lg shadow-lg">
           {number}
         </div>
-        <h3 className="text-xl font-semibold mb-2 mt-4">{title}</h3>
-        <p className="text-gray-400 text-sm">{text}</p>
+        <h3 className="text-lg sm:text-xl font-semibold mb-2 mt-3 sm:mt-4">
+          {title}
+        </h3>
+        <p className="text-gray-400 text-xs sm:text-sm">{text}</p>
       </div>
     </div>
   );
@@ -823,18 +868,20 @@ function StepCard({ number, title, text }) {
 
 function Testimonial({ text, author, role }) {
   return (
-    <div className="bg-slate-900 rounded-2xl p-6 border border-slate-800 hover:border-emerald-500/30 transition-all">
-      <div className="flex gap-1 mb-4">
+    <div className="bg-slate-900 rounded-xl sm:rounded-2xl p-5 sm:p-6 border border-slate-800 hover:border-emerald-500/30 transition-all">
+      <div className="flex gap-1 mb-3 sm:mb-4">
         {[...Array(5)].map((_, i) => (
-          <span key={i} className="text-yellow-400">
+          <span key={i} className="text-yellow-400 text-sm sm:text-base">
             ★
           </span>
         ))}
       </div>
-      <p className="text-gray-300 mb-4 italic">"{text}"</p>
+      <p className="text-gray-300 mb-3 sm:mb-4 italic text-sm sm:text-base">
+        "{text}"
+      </p>
       <div>
-        <p className="font-semibold">{author}</p>
-        <p className="text-sm text-gray-400">{role}</p>
+        <p className="font-semibold text-sm sm:text-base">{author}</p>
+        <p className="text-xs sm:text-sm text-gray-400">{role}</p>
       </div>
     </div>
   );
@@ -852,42 +899,46 @@ function PricingCard({
 }) {
   return (
     <div
-      className={`relative bg-slate-900 rounded-3xl p-8 border ${
+      className={`relative bg-slate-900 rounded-2xl sm:rounded-3xl p-6 sm:p-8 border ${
         popular
-          ? "border-emerald-500 shadow-xl shadow-emerald-500/20 scale-105"
+          ? "border-emerald-500 shadow-xl shadow-emerald-500/20 sm:scale-105"
           : "border-slate-800"
       } transition-all hover:border-emerald-500/50`}
     >
       {popular && (
-        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-          <span className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm font-bold px-4 py-1 rounded-full shadow-lg">
+        <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
+          <span className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs sm:text-sm font-bold px-3 sm:px-4 py-1 rounded-full shadow-lg">
             Most Popular
           </span>
         </div>
       )}
 
-      <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold mb-2">{name}</h3>
-        <p className="text-gray-400 text-sm mb-4">{description}</p>
+      <div className="text-center mb-5 sm:mb-6">
+        <h3 className="text-xl sm:text-2xl font-bold mb-2">{name}</h3>
+        <p className="text-gray-400 text-xs sm:text-sm mb-3 sm:mb-4">
+          {description}
+        </p>
         <div className="mb-2">
-          <span className="text-5xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+          <span className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
             {price}
           </span>
         </div>
-        <p className="text-gray-500 text-sm">{period}</p>
+        <p className="text-gray-500 text-xs sm:text-sm">{period}</p>
       </div>
 
-      <ul className="space-y-4 mb-8">
+      <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
         {features.map((feature, index) => (
-          <li key={index} className="flex items-start gap-3">
-            <span className="text-emerald-400 mt-1 flex-shrink-0">✓</span>
-            <span className="text-gray-300 text-sm">{feature}</span>
+          <li key={index} className="flex items-start gap-2 sm:gap-3">
+            <span className="text-emerald-400 mt-0.5 sm:mt-1 flex-shrink-0">
+              ✓
+            </span>
+            <span className="text-gray-300 text-xs sm:text-sm">{feature}</span>
           </li>
         ))}
       </ul>
       <button
         onClick={onClick}
-        className={`w-full py-4 rounded-xl font-semibold transition-all ${
+        className={`w-full py-3 sm:py-4 rounded-xl font-semibold transition-all text-sm sm:text-base ${
           popular
             ? "bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg shadow-emerald-500/25"
             : "bg-slate-800 hover:bg-slate-700 border border-slate-700"

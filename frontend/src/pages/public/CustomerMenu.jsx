@@ -2,13 +2,17 @@ import { useContext, useState, useMemo } from "react";
 import { PublicContext } from "../../context/PublicContext";
 import "../../index.css";
 import FoodFilterToggles from "../../components/FoodFilterToggles";
-import { Triangle, Search } from "lucide-react";
+import { Triangle, Search, ChevronDown } from "lucide-react";
 import FoodLoaderDemo from "../../components/FoodLoader";
+import ItemDetailModal from "../../components/ItemDetailModal";
 
 export default function CustomerMenu() {
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [modalVariantIndex, setModalVariantIndex] = useState(0);
   const [filter, setFilter] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedVariants, setSelectedVariants] = useState({});
   const { isLoading, data, error } = useContext(PublicContext);
   const { menu = [] } = data || {};
 
@@ -35,8 +39,40 @@ export default function CustomerMenu() {
       }))
       .filter((category) => category.items.length > 0);
   }, [menu, categoryFilter, filter, searchQuery]);
-  console.log("data", data);
+
   const currency = data?.restaurant?.currency || "₹";
+
+  const handleVariantChange = (itemId, variantIndex) => {
+    setSelectedVariants((prev) => ({
+      ...prev,
+      [itemId]: variantIndex,
+    }));
+  };
+
+  const getSelectedVariant = (item) => {
+    if (!item.variants || item.variants.length === 0) return null;
+    const selectedIndex = selectedVariants[item._id] || 0;
+    return item.variants[selectedIndex];
+  };
+  const getDisplayPrice = (item) => {
+    // CASE 1: Variants exist
+    if (item.variants && item.variants.length > 0) {
+      const selectedIndex = selectedVariants[item._id] || 0;
+      const variant = item.variants[selectedIndex];
+
+      return {
+        basePrice: variant.basePrice ?? variant.price ?? null,
+        discountedPrice: variant.discountedPrice ?? null,
+      };
+    }
+
+    // CASE 2: No variants
+    return {
+      basePrice: item.basePrice ?? null,
+      discountedPrice: item.discountedPrice ?? null,
+    };
+  };
+
   return (
     <div className="min-h-screen mb-4 bg-gradient-to-br from-slate-50 via-white to-emerald-50/20">
       {isLoading && (
@@ -183,104 +219,120 @@ export default function CustomerMenu() {
 
                   {/* Items Grid */}
                   <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
-                    {category.items.map((item) => (
-                      <div
-                        key={item._id}
-                        className="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-emerald-200 hover:-translate-y-1"
-                      >
-                        {/* Image Container */}
-                        <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
-                          {item.imageUrl ? (
-                            <img
-                              src={item.imageUrl}
-                              alt={item.name}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                              <div className="text-center">
-                                <div className="text-4xl sm:text-5xl mb-2">
-                                  🍽️
-                                </div>
-                                <p className="text-xs text-gray-400">
-                                  No Image
-                                </p>
-                              </div>
-                            </div>
-                          )}
+                    {category.items.map((item) => {
+                      const displayPrice = getDisplayPrice(item);
+                      const hasVariants =
+                        item.variants && item.variants.length > 0;
+                      const selectedVariant = getSelectedVariant(item);
 
-                          {/* Badges Container */}
-                          <div className="absolute inset-0 p-3">
-                            {/* Veg/Non-veg Badge - Top Left */}
-                            <div className="absolute top-2 left-2">
-                              {item.isVeg === false ? (
-                                <div className="flex items-center justify-center border-2 border-red-600 w-6 h-6 sm:w-7 sm:h-7 rounded bg-white/95 backdrop-blur-sm shadow-lg">
-                                  <Triangle
-                                    size={14}
-                                    className="text-red-600"
-                                    fill="currentColor"
-                                  />
+                      return (
+                        <div
+                          key={item._id}
+                          className="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-emerald-200 hover:-translate-y-1"
+                          onClick={() => {
+                            setSelectedItem(item);
+                            setModalVariantIndex(
+                              selectedVariants[item._id] || 0
+                            );
+                          }}
+                        >
+                          {/* Image Container */}
+                          <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
+                            {item.imageUrl ? (
+                              <img
+                                src={item.imageUrl}
+                                alt={item.name}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center">
+                                <div className="text-center">
+                                  <div className="text-4xl sm:text-5xl mb-2">
+                                    🍽️
+                                  </div>
+                                  <p className="text-xs text-gray-400">
+                                    No Image
+                                  </p>
                                 </div>
-                              ) : (
-                                <div className="flex items-center justify-center border-2 border-emerald-600 w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-white/95 backdrop-blur-sm shadow-lg">
-                                  <div className="w-3 h-3 rounded-full bg-emerald-600"></div>
+                              </div>
+                            )}
+
+                            {/* Badges Container */}
+                            <div className="absolute inset-0 p-3">
+                              {/* Veg/Non-veg Badge - Top Left */}
+                              <div className="absolute top-2 left-2">
+                                {item.isVeg === false ? (
+                                  <div className="flex items-center justify-center border-2 border-red-600 w-6 h-6 sm:w-7 sm:h-7 rounded bg-white/95 backdrop-blur-sm shadow-lg">
+                                    <Triangle
+                                      size={14}
+                                      className="text-red-600"
+                                      fill="currentColor"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center justify-center border-2 border-emerald-600 w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-white/95 backdrop-blur-sm shadow-lg">
+                                    <div className="w-3 h-3 rounded-full bg-emerald-600"></div>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Bestseller Badge - Top Right */}
+                              {item.isBestSeller && (
+                                <div className="absolute top-2 right-2">
+                                  <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg backdrop-blur-sm">
+                                    <span>Bestseller</span>
+                                  </span>
                                 </div>
                               )}
                             </div>
-
-                            {/* Bestseller Badge - Top Right */}
-                            {item.isBestSeller && (
-                              <div className="absolute top-2 right-2">
-                                <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg backdrop-blur-sm">
-                                  <span>Bestseller</span>
-                                </span>
-                              </div>
-                            )}
                           </div>
-                        </div>
 
-                        {/* Content */}
-                        <div className="p-2 sm:p-5">
-                          <h3 className="font-bold text-gray-900 text-base sm:text-lg">
-                            {item.name || "NA"}
-                          </h3>
+                          {/* Content */}
+                          <div className="p-2 sm:p-5">
+                            <h3 className="font-bold truncate text-gray-900 text-base sm:text-lg mb-2">
+                              {item.name || "NA"}
+                            </h3>
+                            <p className="text-xs text-gray-600 truncate">
+                              {" "}
+                              {item.description}
+                            </p>
+                            <div className="flex items-end justify-between relative">
+                              <div className="flex flex-col gap-1">
+                                {/* Display Price - either discounted or base */}
+                                <span className="text-2xl sm:text-3xl font-bold text-emerald-600">
+                                  {currency}
+                                  {displayPrice.discountedPrice ??
+                                    displayPrice.basePrice ??
+                                    "—"}
+                                </span>
+                                {/* Discount Badge - shown only when discounted */}
+                                {displayPrice.discountedPrice != null &&
+                                  displayPrice.basePrice != null &&
+                                  displayPrice.discountedPrice !==
+                                    displayPrice.basePrice && (
+                                    <>
+                                      <span className="text-sm text-gray-400 line-through">
+                                        {currency}
+                                        {displayPrice.basePrice}
+                                      </span>
 
-                          <div className="flex items-end justify-between relative">
-                            <div className="flex flex-col gap-1">
-                              {/* Display Price - either discounted or base */}
-                              <span className="text-2xl sm:text-3xl font-bold text-emerald-600">
-                                {currency}
-                                {item.discountedPrice &&
-                                item.basePrice !== item.discountedPrice
-                                  ? item.discountedPrice
-                                  : item.basePrice || "NA"}
-                              </span>
-
-                              {/* Original Price - shown only when discounted */}
-                              {item.discountedPrice &&
-                                item.basePrice !== item.discountedPrice && (
-                                  <span className="text-sm text-gray-400 line-through">
-                                    {currency}{item.basePrice || "NA"}
-                                  </span>
-                                )}
-
-                              {/* Discount Badge - shown only when discounted */}
-                              {item.discountedPrice &&
-                                item.basePrice !== item.discountedPrice && (
-                                  <div className="absolute bottom-0 right-0 bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full w-fit">
-                                    {Math.round(
-                                      ((item.basePrice - item.discountedPrice) /
-                                        item.basePrice) *
-                                        100
-                                    )}
-                                    % OFF
-                                  </div>
-                                )}
+                                      <div className="absolute bottom-0 right-0 bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full w-fit">
+                                        {Math.round(
+                                          ((displayPrice.basePrice -
+                                            displayPrice.discountedPrice) /
+                                            displayPrice.basePrice) *
+                                            100
+                                        )}
+                                        % OFF
+                                      </div>
+                                    </>
+                                  )}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </section>
               ))}
@@ -300,6 +352,15 @@ export default function CustomerMenu() {
             </div>
           )}
         </div>
+      )}
+      {selectedItem && (
+        <ItemDetailModal
+          item={selectedItem}
+          currency={currency}
+          selectedVariantIndex={modalVariantIndex}
+          onVariantChange={(i) => setModalVariantIndex(i)}
+          onClose={() => setSelectedItem(null)}
+        />
       )}
     </div>
   );

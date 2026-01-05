@@ -1,29 +1,29 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import ConfirmModal from "../ConfirmationModal";
 import { FaCircle } from "react-icons/fa";
 import { BsTriangleFill } from "react-icons/bs";
+import { AuthContext } from "../../context/AuthContext";
 
 export default function MenuItemCard({
   item,
   onEdit,
   onDelete,
+  resCurrency,
   toggleAvailability,
 }) {
   const isDiscounted =
     item.discountedPrice &&
     item.discountedPrice !== item.basePrice &&
     item.discountedPrice < item.basePrice;
-
+  console.log("MenuItemCard render:", resCurrency);
   const discountPercent = isDiscounted
     ? Math.round(
         ((item.basePrice - item.discountedPrice) / item.basePrice) * 100
       )
     : 0;
-
   const [confirmMessage, setConfirmMessage] = useState("");
   const [confirmAction, setConfirmAction] = useState(null);
-
   return (
     <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl border border-gray-100 transition-all duration-300 hover:-translate-y-1">
       <ConfirmModal
@@ -51,9 +51,15 @@ export default function MenuItemCard({
         <div className="absolute top-3 left-3">
           <span>
             {item.isVeg ? (
-              <FaCircle size={20} className="text-emerald-600 border border-emerald-700 bg-white p-1 rounded-lg" />
+              <FaCircle
+                size={20}
+                className="text-emerald-600 border border-emerald-700 bg-white p-1 rounded-lg"
+              />
             ) : (
-              <BsTriangleFill size={20} className="text-red-600 border border-red-700 bg-white p-1 rounded-lg" />
+              <BsTriangleFill
+                size={20}
+                className="text-red-600 border border-red-700 bg-white p-1 rounded-lg"
+              />
             )}
           </span>
         </div>
@@ -72,29 +78,35 @@ export default function MenuItemCard({
       <div className="p-2.5 sm:py-5 sm:px-3">
         {/* Title + Price */}
         <div className="flex justify-between items-center gap-2">
-          <h3 className="text-sm sm:text-xl font-semibold text-gray-900 leading-tight flex-1 line-clamp-2">
+          <h3 className="text-sm sm:text-xl font-semibold text-gray-900 leading-tight flex-1 line-clamp-2 ">
             {item.name}
           </h3>
 
           {/* Price Display */}
-          <div className="text-right flex-shrink-0">
-            {/* {isDiscounted ? (
-              <div className="space-y-0.5">
-                <div className="text-xl sm:text-2xl font-bold text-emerald-600">
-                  ₹{item.discountedPrice}
+          <div className="text-right flex-shrink-0 flex flex-col items-end">
+            <span className="text-2xl sm:text-3xl font-bold text-emerald-600">
+              {item.discountedPrice &&
+              item.basePrice !== item.discountedPrice ? (
+                <div>
+                  {resCurrency}
+                  {item.discountedPrice}
                 </div>
-                <div className="text-xs sm:text-sm text-gray-400 line-through">
-                  ₹{item.basePrice}
+              ) : (
+                <div className="">
+                  {resCurrency}
+                  {item.basePrice || "NA"}
                 </div>
-              </div>
-            ) : (
-              <div className="text-xl sm:text-2xl font-bold text-gray-900">
-                ₹{item.basePrice}
-              </div>
-            )} */}
-            <div className="text-base sm:text-2xl font-bold text-gray-900">
-              ₹{item.basePrice}
-            </div>
+              )}
+            </span>
+
+            {/* Original Price - shown only when discounted */}
+            {item.discountedPrice &&
+              item.basePrice !== item.discountedPrice && (
+                <span className="text-sm text-gray-400 line-through">
+                  {resCurrency}
+                  {item.basePrice || "NA"}
+                </span>
+              )}
           </div>
         </div>
 

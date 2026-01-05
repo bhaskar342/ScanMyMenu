@@ -70,6 +70,7 @@ exports.getPublicMenu = async (req, res) => {
           basePrice: item.basePrice,
           discountedPrice: item.discountedPrice,
           variants: item.variants,
+          description: item.description,
           isBestSeller: item.isBestSeller,
           isVeg: item.isVeg,
           imageUrl: item.imageUrl,
