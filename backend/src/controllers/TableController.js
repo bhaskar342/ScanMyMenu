@@ -10,10 +10,8 @@ const BASE_URL = process.env.BASE_URL;
 // ✅ CREATE TABLE (POST)
 // ===================================================================
 exports.postAddTable = async (req, res) => {
-  console.log("Create Table Request Body:", req.body);
   try {
     const restaurantId = req.user.restaurantId;
-    console.log(restaurantId);
     const { name } = req.body;
 
     if (!name) {

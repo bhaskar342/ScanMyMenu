@@ -70,7 +70,7 @@ export default function AdminMenuItems() {
     }
   };
   const { resCurrency } = useContext(AuthContext);
-  console.log("Currency in MenuItemCard:", resCurrency);
+  "Currency in MenuItemCard:", resCurrency;
 
   return (
     <div className="container-fluid">

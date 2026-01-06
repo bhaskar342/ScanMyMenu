@@ -33,7 +33,7 @@ export const MenuProvider = ({ children }) => {
       const result = await res.json();
 
       if (result.success) {
-        console.log("Uploaded menu item", result.menuItem);
+        "Uploaded menu item", result.menuItem;
         return { success: true, result };
       }
 
@@ -63,7 +63,7 @@ export const MenuProvider = ({ children }) => {
       });
 
       const data = await res.json();
-      console.log("Menu Items:", data);
+      "Menu Items:", data;
 
       if (data.success) {
         setMenuItems(data.menuItems);
@@ -79,7 +79,7 @@ export const MenuProvider = ({ children }) => {
   useEffect(() => {
     if (token) getAllMenuItems();
   }, [token]);
-  
+
   // ----------------------------------------------------------------------
   // ✅ DELETE MENU ITEM
   // ----------------------------------------------------------------------
@@ -125,7 +125,7 @@ export const MenuProvider = ({ children }) => {
       });
 
       const result = await res.json();
-      console.log("Update Result:", result);
+      "Update Result:", result;
 
       if (result.success) {
         await getAllMenuItems();

@@ -31,7 +31,7 @@ export const CategoryProvider = ({ children }) => {
       });
 
       const res = await r.json();
-      console.log("Category Response", res);
+      "Category Response", res;
 
       if (res.success) {
         await getAllCategories();
@@ -43,7 +43,7 @@ export const CategoryProvider = ({ children }) => {
         message: res.message || "Unable to add category",
       };
     } catch (error) {
-      console.log("Error in adding category", error);
+      "Error in adding category", error;
       return { success: false, message: error.message };
     } finally {
       setIsCatLoading(false);
@@ -65,7 +65,7 @@ export const CategoryProvider = ({ children }) => {
       });
 
       const res = await r.json();
-      console.log("Categories:", res);
+      "Categories:", res;
       if (res.success) {
         setCategories(res.categories);
       }
@@ -111,7 +111,7 @@ export const CategoryProvider = ({ children }) => {
   // ✅ UPDATE CATEGORY
   // ----------------------------------------------------------------------
   const updateCategory = async (id, data) => {
-    console.log("Updating category:", id, data);
+    "Updating category:", id, data;
     try {
       setIsCatLoading(true);
       const r = await fetch(`${BASE_API}/api/category/${id}`, {

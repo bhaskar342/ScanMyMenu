@@ -57,10 +57,10 @@ export const TableProvider = ({ children }) => {
         },
       });
       const res = await r.json();
-      console.log("Tables fetched:", res);
+      "Tables fetched:", res;
       setTables(res.tables);
     } catch (error) {
-      console.log("Error", error);
+      "Error", error;
       return {
         success: false,
         message: res.message || "Table categories failed",
@@ -108,7 +108,7 @@ export const TableProvider = ({ children }) => {
 
   const handleDownload = async (qr) => {
     try {
-      console.log(qr);
+      qr;
       const response = await fetch(qr.qrImage);
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);

@@ -21,7 +21,7 @@ export const RestaurantProvider = ({ children }) => {
         },
       });
       const result = await res.json();
-      console.log("Fetched restaurants:", result);
+      "Fetched restaurants:", result;
       setRestaurants(result.restaurants || []);
       return { success: true, restaurants: result.restaurants };
     } catch (err) {

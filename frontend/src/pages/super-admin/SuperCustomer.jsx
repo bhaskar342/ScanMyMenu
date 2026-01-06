@@ -4,13 +4,13 @@ import { RestaurantContext } from "../../context/SuperAdminContext/RestaurantsCo
 
 function SuperCustomer() {
   const { restaurants, isLoading } = useContext(RestaurantContext);
-  console.log("Restaurants in SuperCustomer:", restaurants);
+  "Restaurants in SuperCustomer:", restaurants;
   return (
     <div>
-      {!isLoading && restaurants.map((restaurant) => (
-        <RestaurantDetailCard key={restaurant._id} restaurant={restaurant} />
-      ))}
-
+      {!isLoading &&
+        restaurants.map((restaurant) => (
+          <RestaurantDetailCard key={restaurant._id} restaurant={restaurant} />
+        ))}
     </div>
   );
 }

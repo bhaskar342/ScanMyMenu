@@ -16,7 +16,6 @@ export default function MenuItemCard({
     item.discountedPrice &&
     item.discountedPrice !== item.basePrice &&
     item.discountedPrice < item.basePrice;
-  console.log("MenuItemCard render:", resCurrency);
   const discountPercent = isDiscounted
     ? Math.round(
         ((item.basePrice - item.discountedPrice) / item.basePrice) * 100

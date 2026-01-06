@@ -15,7 +15,7 @@ export const SettingProvider = ({ children }) => {
         },
       });
       const res = await r.json();
-      console.log("Settings fetched:", res);
+      "Settings fetched:", res;
       setSettings(res.restaurant || {});
       return { success: true, settings };
     } catch (error) {

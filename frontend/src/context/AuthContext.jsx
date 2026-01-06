@@ -76,7 +76,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   const loginUser = async (data) => {
-    console.log("Logging in with data:", data);
     setIsLoading(true);
     try {
       const r = await fetch(`${BASE_API}/api/auth/login`, {
@@ -86,7 +85,6 @@ export const AuthProvider = ({ children }) => {
       });
 
       const res = await r.json();
-      console.log(res);
       if (r.ok) {
         const token = res.token;
         const restaurant = res.restaurant;
@@ -115,7 +113,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem("authToken");
     localStorage.removeItem("restaurant");
-    console.log("User logged out");
+    ("User logged out");
   };
 
   // ✅ Automatically log out when token expires (runs every minute)

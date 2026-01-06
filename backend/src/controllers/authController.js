@@ -4,7 +4,6 @@ const Restaurant = require("../models/RestaurantModel");
 require("dotenv").config();
 
 exports.postSignup = async (req, res) => {
-  console.log("Signup data", req.body);
 
   const { restaurantName, ownerName, email, password, address, phoneNumber } =
     req.body;

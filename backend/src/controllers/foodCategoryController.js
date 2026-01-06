@@ -6,7 +6,6 @@ const slugify = require("slugify");
  * ✅ Create a new food category
  */
 exports.postAddCategory = async (req, res) => {
-  console.log("postAddCategory data", req.user);
   try {
     const { name, isActive } = req.body;
     const restaurantId = req.user.restaurantId;

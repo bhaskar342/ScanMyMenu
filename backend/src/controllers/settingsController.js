@@ -2,7 +2,6 @@ const Restaurant = require("../models/RestaurantModel");
 
 // ✅ GET Restaurant + User Settings
 exports.getSettings = async (req, res) => {
-  console.log("USer", req.user);
   try {
     const restaurantId = req.user.restaurantId;
     // Fetch restaurant and user in parallel

@@ -14,7 +14,6 @@ function getInitials(name = "") {
 }
 
 exports.postAddMenuItems = async (req, res) => {
-  console.log(req.body);
   try {
     let {
       name,
@@ -164,7 +163,6 @@ exports.deleteMenu = async (req, res) => {
 };
 
 exports.updateMenuItem = async (req, res) => {
-  console.log(req.body);
   try {
     const { id } = req.params;
 

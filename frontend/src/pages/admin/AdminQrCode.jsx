@@ -23,7 +23,7 @@ function AdminQrCode() {
 
   const { createTableAndQr, handleDownload, handleDelete, tables, isLoading } =
     useContext(TableContext);
-  console.log(tables);
+  tables;
   const onSubmit = async (data) => {
     const result = await createTableAndQr(data);
     if (result.success) {

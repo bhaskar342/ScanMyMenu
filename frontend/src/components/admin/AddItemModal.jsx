@@ -71,7 +71,6 @@ function AddItemModal({ editingItem, setEditingItem, setShowAddModal }) {
   }, [watchImage, editingItem]);
 
   const onSubmit = async (data) => {
-    console.log("Form Data:", data);
     try {
       // Validate variants
       for (let i = 0; i < data.variants.length; i++) {
