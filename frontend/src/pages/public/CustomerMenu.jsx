@@ -2,7 +2,7 @@ import { useContext, useState, useMemo } from "react";
 import { PublicContext } from "../../context/PublicContext";
 import "../../index.css";
 import FoodFilterToggles from "../../components/FoodFilterToggles";
-import { Triangle, Search, ChevronDown } from "lucide-react";
+import { Triangle, Search } from "lucide-react";
 import FoodLoaderDemo from "../../components/FoodLoader";
 import ItemDetailModal from "../../components/ItemDetailModal";
 
@@ -49,28 +49,22 @@ export default function CustomerMenu() {
     }));
   };
 
-  const getSelectedVariant = (item) => {
-    if (!item.variants || item.variants.length === 0) return null;
-    const selectedIndex = selectedVariants[item._id] || 0;
-    return item.variants[selectedIndex];
+  const shouldOpenModal = (item) => {
+    // If restaurant has images → always open
+    if (data?.restaurant?.hasPictures) return true;
+
+    // If no images → open only when extra info exists
+    const hasDescription = item.description && item.description.trim() !== "";
+    const hasVariants = item.variants && item.variants.length > 0;
+
+    return hasDescription || hasVariants;
   };
-  const getDisplayPrice = (item) => {
-    // CASE 1: Variants exist
-    if (item.variants && item.variants.length > 0) {
-      const selectedIndex = selectedVariants[item._id] || 0;
-      const variant = item.variants[selectedIndex];
 
-      return {
-        price: variant.price ?? variant.price ?? null,
-        discountedPrice: variant.discountedPrice ?? null,
-      };
-    }
+  const handleItemClick = (item) => {
+    if (!shouldOpenModal(item)) return;
 
-    // CASE 2: No variants
-    return {
-      price: item.price ?? null,
-      discountedPrice: item.discountedPrice ?? null,
-    };
+    setSelectedItem(item);
+    setModalVariantIndex(selectedVariants[item._id] || 0);
   };
 
   return (
@@ -217,123 +211,151 @@ export default function CustomerMenu() {
                     <div className="flex-1 h-px bg-gradient-to-r from-gray-300 via-gray-200 to-transparent"></div>
                   </div>
 
-                  {/* Items Grid */}
-                  <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
-                    {category.items.map((item) => {
-                      const displayPrice = getDisplayPrice(item);
-                      const hasVariants =
-                        item.variants && item.variants.length > 0;
-                      const selectedVariant = getSelectedVariant(item);
-
-                      return (
-                        <div
-                          key={item._id}
-                          className="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-emerald-200 hover:-translate-y-1"
-                          onClick={() => {
-                            setSelectedItem(item);
-                            setModalVariantIndex(
-                              selectedVariants[item._id] || 0
-                            );
-                          }}
-                        >
-                          {/* Image Container */}
-                          <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
-                            {item.imageUrl ? (
-                              <img
-                                src={item.imageUrl}
-                                alt={item.name}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                              />
-                            ) : (
-                              <div className="w-full h-full flex items-center justify-center">
-                                <div className="text-center">
-                                  <div className="text-4xl sm:text-5xl mb-2">
-                                    🍽️
+                  {data.restaurant.hasPictures ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 lg:gap-6">
+                      {category.items.map((item) => {
+                        return (
+                          <div
+                            key={item._id}
+                            className="group bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-emerald-200 hover:-translate-y-1"
+                            onClick={() => handleItemClick(item)}
+                          >
+                            {/* Image Container */}
+                            <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-gray-100 to-gray-50">
+                              {item.imageUrl ? (
+                                <img
+                                  src={item.imageUrl}
+                                  alt={item.name}
+                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                  <div className="text-center">
+                                    <div className="text-4xl sm:text-5xl mb-2">
+                                      🍽️
+                                    </div>
+                                    <p className="text-xs text-gray-400">
+                                      No Image
+                                    </p>
                                   </div>
-                                  <p className="text-xs text-gray-400">
-                                    No Image
-                                  </p>
+                                </div>
+                              )}
+
+                              {/* Badges Container */}
+                              <div className="absolute inset-0 p-3">
+                                {/* Veg/Non-veg Badge - Top Left */}
+                                <div className="absolute top-2 left-2">
+                                  {item.isVeg === false ? (
+                                    <div className="flex items-center justify-center border-2 border-red-600 w-6 h-6 sm:w-7 sm:h-7 rounded bg-white/95 backdrop-blur-sm shadow-lg">
+                                      <Triangle
+                                        size={14}
+                                        className="text-red-600"
+                                        fill="currentColor"
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center justify-center border-2 border-emerald-600 w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-white/95 backdrop-blur-sm shadow-lg">
+                                      <div className="w-3 h-3 rounded-full bg-emerald-600"></div>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Bestseller Badge - Top Right */}
+                                {item.isBestSeller && (
+                                  <div className="absolute top-2 right-2">
+                                    <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg backdrop-blur-sm">
+                                      <span>Bestseller</span>
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Content */}
+                            <div className="p-2 sm:p-5">
+                              <h3 className="font-bold truncate text-gray-900 text-base sm:text-lg mb-2">
+                                {item.name || "NA"}
+                              </h3>
+                              <p className="text-xs text-gray-600 truncate">
+                                {" "}
+                                {item.description}
+                              </p>
+                              <div className="flex items-end justify-between relative">
+                                <div className="flex flex-col gap-1">
+                                  {/* Display Price - either discounted or base */}
+                                  <span className="text-2xl sm:text-3xl font-bold text-emerald-600">
+                                    {currency}
+                                    {item.price ?? "—"}
+                                  </span>
                                 </div>
                               </div>
-                            )}
-
-                            {/* Badges Container */}
-                            <div className="absolute inset-0 p-3">
-                              {/* Veg/Non-veg Badge - Top Left */}
-                              <div className="absolute top-2 left-2">
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="bg-white rounded-2xl -mt-5 divide-y divide-gray-200">
+                      {category.items.map((item) => {
+                        return (
+                          <div
+                            key={item._id}
+                            onClick={() => handleItemClick(item)}
+                            className="w-full text-left px-4 py-4 flex items-center justify-between hover:bg-gray-50 active:bg-gray-100 transition"
+                          >
+                            {/* LEFT SIDE */}
+                            <div className="flex items-center gap-3 pr-4">
+                              {/* Veg / Non Veg Indicator */}
+                              <div className="mt-1">
                                 {item.isVeg === false ? (
-                                  <div className="flex items-center justify-center border-2 border-red-600 w-6 h-6 sm:w-7 sm:h-7 rounded bg-white/95 backdrop-blur-sm shadow-lg">
+                                  <div className="border-2 border-red-600 w-4 h-4 flex items-center justify-center rounded">
                                     <Triangle
-                                      size={14}
+                                      size={10}
                                       className="text-red-600"
                                       fill="currentColor"
                                     />
                                   </div>
                                 ) : (
-                                  <div className="flex items-center justify-center border-2 border-emerald-600 w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-white/95 backdrop-blur-sm shadow-lg">
-                                    <div className="w-3 h-3 rounded-full bg-emerald-600"></div>
+                                  <div className="border-2 border-emerald-600 w-4 h-4 flex items-center justify-center rounded">
+                                    <div className="w-2 h-2 bg-emerald-600 rounded-full" />
                                   </div>
                                 )}
                               </div>
 
-                              {/* Bestseller Badge - Top Right */}
-                              {item.isBestSeller && (
-                                <div className="absolute top-2 right-2">
-                                  <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-lg backdrop-blur-sm">
-                                    <span>Bestseller</span>
+                              {/* Item Info */}
+                              <div className="flex flex-col">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-semibold text-gray-900 text-base">
+                                    {item.name}
                                   </span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
 
-                          {/* Content */}
-                          <div className="p-2 sm:p-5">
-                            <h3 className="font-bold truncate text-gray-900 text-base sm:text-lg mb-2">
-                              {item.name || "NA"}
-                            </h3>
-                            <p className="text-xs text-gray-600 truncate">
-                              {" "}
-                              {item.description}
-                            </p>
-                            <div className="flex items-end justify-between relative">
-                              <div className="flex flex-col gap-1">
-                                {/* Display Price - either discounted or base */}
-                                <span className="text-2xl sm:text-3xl font-bold text-emerald-600">
-                                  {currency}
-                                  {displayPrice.discountedPrice ??
-                                    displayPrice.price ??
-                                    "—"}
-                                </span>
-                                {/* Discount Badge - shown only when discounted */}
-                                {displayPrice.discountedPrice != null &&
-                                  displayPrice.price != null &&
-                                  displayPrice.discountedPrice !==
-                                    displayPrice.price && (
-                                    <>
-                                      <span className="text-sm text-gray-400 line-through">
-                                        {currency}
-                                        {displayPrice.price}
-                                      </span>
-
-                                      <div className="absolute bottom-0 right-0 bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full w-fit">
-                                        {Math.round(
-                                          ((displayPrice.price -
-                                            displayPrice.discountedPrice) /
-                                            displayPrice.price) *
-                                            100
-                                        )}
-                                        % OFF
-                                      </div>
-                                    </>
+                                  {item.isBestSeller && (
+                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-semibold">
+                                      Bestseller
+                                    </span>
                                   )}
+                                </div>
+
+                                {item.description && (
+                                  <span className="text-sm text-gray-500 line-clamp-1">
+                                    {item.description}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* RIGHT SIDE PRICE */}
+                            <div className="text-right min-w-[70px]">
+                              <div className="text-lg font-bold text-emerald-600">
+                                {currency}
+                                {item.price ?? "-"}
                               </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </section>
               ))}
             </div>
@@ -356,6 +378,7 @@ export default function CustomerMenu() {
       {selectedItem && (
         <ItemDetailModal
           item={selectedItem}
+          restaurant={data.restaurant}
           currency={currency}
           selectedVariantIndex={modalVariantIndex}
           onVariantChange={(i) => setModalVariantIndex(i)}

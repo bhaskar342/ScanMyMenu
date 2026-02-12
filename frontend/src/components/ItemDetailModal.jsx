@@ -2,6 +2,7 @@ import { X, Triangle, Sparkles } from "lucide-react";
 
 export default function ItemDetailModal({
   item,
+  restaurant,
   currency,
   onClose,
   selectedVariantIndex,
@@ -13,17 +14,7 @@ export default function ItemDetailModal({
   const variant = hasVariants && item.variants[selectedVariantIndex || 0];
 
   const price = hasVariants ? variant?.price ?? variant?.price : item.price;
-
-  const discountedPrice = hasVariants
-    ? variant?.discountedPrice
-    : item.discountedPrice;
-
-  const hasDiscount =
-    discountedPrice != null && price != null && discountedPrice !== price;
-  const discountPercentage = hasDiscount
-    ? Math.round(((price - discountedPrice) / price) * 100)
-    : 0;
-
+  console.log(restaurant);
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       {/* Backdrop */}
@@ -38,65 +29,67 @@ export default function ItemDetailModal({
         className="relative w-full sm:max-w-2xl bg-white rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl overflow-hidden max-h-[90vh] sm:max-h-[85vh] flex flex-col"
         style={{ animation: "slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1)" }}
       >
-        {/* Image Container */}
-        <div className="relative h-56 sm:h-72 bg-gradient-to-br from-gray-100 via-gray-50 to-emerald-50/30 flex-shrink-0">
-          {item.imageUrl ? (
-            <img
-              src={item.imageUrl}
-              alt={item.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center">
-              <div className="text-6xl sm:text-7xl mb-2">🍽️</div>
-              <p className="text-sm text-gray-400 font-medium">
-                No Image Available
-              </p>
-            </div>
-          )}
+        {restaurant.hasPictures && (
+          <div className="relative h-56 sm:h-72 bg-gradient-to-br from-gray-100 via-gray-50 to-emerald-50/30 flex-shrink-0">
+            {item.imageUrl ? (
+              <img
+                src={item.imageUrl}
+                alt={item.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center">
+                <div className="text-6xl sm:text-7xl mb-2">🍽️</div>
+                <p className="text-sm text-gray-400 font-medium">
+                  No Image Available
+                </p>
+              </div>
+            )}
 
-          {/* Gradient Overlay at Bottom */}
-          <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+            {/* Gradient Overlay at Bottom */}
+            <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
 
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm hover:bg-white rounded-full p-2.5 shadow-lg hover:shadow-xl transition-all duration-200 group border border-gray-100"
-          >
-            <X
-              size={20}
-              className="text-gray-700 group-hover:text-gray-900 transition-colors"
-            />
-          </button>
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm hover:bg-white rounded-full p-2.5 shadow-lg hover:shadow-xl transition-all duration-200 group border border-gray-100"
+            >
+              <X
+                size={20}
+                className="text-gray-700 group-hover:text-gray-900 transition-colors"
+              />
+            </button>
 
-          {/* Badges Container */}
-          <div className="absolute top-4 left-4 flex flex-col gap-2">
-            {/* Veg / Non-veg Badge */}
-            <div className="">
-              {item.isVeg === false ? (
-                <div className="flex items-center justify-center border-2 border-red-600 w-6 h-6 bg-white rounded-lg">
-                  <Triangle
-                    size={14}
-                    className="text-red-600"
-                    fill="currentColor"
-                  />
-                </div>
-              ) : (
-                <div className="flex items-center justify-center border-2 border-emerald-600 w-6 h-6 bg-white rounded-lg">
-                  <div className="w-3 h-3 bg-emerald-600 rounded-full" />
+            {/* Badges Container */}
+            <div className="absolute top-4 left-4 flex flex-col gap-2">
+              {/* Veg / Non-veg Badge */}
+              <div className="">
+                {item.isVeg === false ? (
+                  <div className="flex items-center justify-center border-2 border-red-600 w-6 h-6 bg-white rounded-lg">
+                    <Triangle
+                      size={14}
+                      className="text-red-600"
+                      fill="currentColor"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center border-2 border-emerald-600 w-6 h-6 bg-white rounded-lg">
+                    <div className="w-3 h-3 bg-emerald-600 rounded-full" />
+                  </div>
+                )}
+              </div>
+
+              {/* Bestseller Badge */}
+              {item.isBestSeller && (
+                <div className="absolute top-43 left-63 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
+                  <Sparkles size={14} className="fill-current" />
+                  <span className="text-xs font-bold">Bestseller</span>
                 </div>
               )}
             </div>
-
-            {/* Bestseller Badge */}
-            {item.isBestSeller && (
-              <div className="absolute top-43 left-63 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
-                <Sparkles size={14} className="fill-current" />
-                <span className="text-xs font-bold">Bestseller</span>
-              </div>
-            )}
           </div>
-        </div>
+        )}
+
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto">
@@ -118,17 +111,14 @@ export default function ItemDetailModal({
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide">
-                    Choose Size
+                    Available Size
                   </h3>
                   <div className="flex-1 h-px bg-gradient-to-r from-gray-200 to-transparent" />
                 </div>
                 <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3">
                   {item.variants.map((v, index) => {
                     const isSelected = index === selectedVariantIndex;
-                    const vPrice =
-                      v.discountedPrice && v.price !== v.discountedPrice
-                        ? v.discountedPrice
-                        : v.price ?? v.price;
+                    const vPrice = v.price;
 
                     return (
                       <button
@@ -166,27 +156,14 @@ export default function ItemDetailModal({
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-gray-600 font-medium mb-1">
-                    Total Price
+                    Price
                   </p>
                   <div className="flex items-end gap-3">
                     <span className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                       {currency}
-                      {discountedPrice ?? price}
+                      {price}
                     </span>
-
-                    {hasDiscount && (
-                      <span className="text-lg text-gray-400 line-through mb-1">
-                        {currency}
-                        {price}
-                      </span>
-                    )}
                   </div>
-                  {hasDiscount && (
-                    <p className="text-xs text-emerald-600 font-semibold mt-1">
-                      You save {currency}
-                      {price - discountedPrice}!
-                    </p>
-                  )}
                 </div>
               </div>
             </div>

@@ -22,7 +22,7 @@ export const PublicProvider = ({ children }) => {
       );
 
       const res = await r.json();
-      "Menu data", res;
+      console.log("RESPONSE", res);
       setData(res);
     } catch (error) {
       setError("roots", { message: error.message });
