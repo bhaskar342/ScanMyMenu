@@ -67,7 +67,7 @@ exports.getPublicMenu = async (req, res) => {
         .map((item) => ({
           _id: item._id,
           name: item.name,
-          basePrice: item.basePrice,
+          price: item.price,
           discountedPrice: item.discountedPrice,
           variants: item.variants,
           description: item.description,

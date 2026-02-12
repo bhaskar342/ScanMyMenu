@@ -112,20 +112,19 @@ export const MenuProvider = ({ children }) => {
   // ----------------------------------------------------------------------
   // ✅ UPDATE MENU ITEM
   // ----------------------------------------------------------------------
-  const updateMenuItem = async (id, formData) => {
+  const updateMenuItem = async (id, data) => {
     try {
       setIsMenuLoading(true);
 
-      const res = await fetch(`${BASE_API}/api/menu/${id}`, {
+      const res = await fetch(`${BASE_API}/api/menu/update/${id}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
         },
-        body: formData,
+        body: data,
       });
 
       const result = await res.json();
-      "Update Result:", result;
 
       if (result.success) {
         await getAllMenuItems();

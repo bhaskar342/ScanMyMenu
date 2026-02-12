@@ -7,7 +7,7 @@ const TableController = require("../controllers/TableController");
 tableRoutes.post(
   "/create",
   verifyToken,
-  authorizeRoles("admin"),
+  authorizeRoles("admin", "superadmin"),
   TableController.postAddTable
 );
 

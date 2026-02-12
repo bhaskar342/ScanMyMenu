@@ -9,6 +9,12 @@ export const RestaurantProvider = ({ children }) => {
   const [isResLoading, setIsResLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [restaurants, setRestaurants] = useState([]);
+  const [isQrLoading, setIsQrLoading] = useState(false);
+  const formatName = (name) => {
+    if (!name) return "";
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  };
+
   // ----------------------------------------------------------------------
   // ✅ GET ALL RESTAURANTS
   // ----------------------------------------------------------------------
@@ -73,6 +79,40 @@ export const RestaurantProvider = ({ children }) => {
     }
   };
 
+  const createTableAndQr = async (data) => {
+    console.log("DATA", data);
+    data.name = formatName(data.name);
+    try {
+      setIsQrLoading(true);
+      const res = await fetch(`${BASE_API}/api/table/create`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        return { success: true };
+      } else {
+        return {
+          success: false,
+          message: result.message || "Error creating table",
+        };
+      }
+    } catch (err) {
+      console.error("Server error", err);
+      return {
+        success: false,
+        message: result.message || "Table creation failed",
+      };
+    } finally {
+      setIsQrLoading(false);
+    }
+  };
+
   return (
     <RestaurantContext.Provider
       value={{
@@ -81,7 +121,9 @@ export const RestaurantProvider = ({ children }) => {
         isResLoading,
         getAllRestaurants,
         toggleRestaurantStatus,
+        createTableAndQr,
         loading,
+        isQrLoading,
       }}
     >
       {children}

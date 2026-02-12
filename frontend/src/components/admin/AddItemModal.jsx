@@ -5,10 +5,12 @@ import { FaUpload, FaCheck, FaPlus, FaTrash } from "react-icons/fa";
 import Loader from "../Loader";
 import { CategoryContext } from "../../context/CategoryContext";
 import LoadingDots from "../LoadingDots";
+import { AuthContext } from "../../context/AuthContext";
 
 function AddItemModal({ editingItem, setEditingItem, setShowAddModal }) {
   const { isMenuLoading, addMenuItem, getAllMenuItems, updateMenuItem } =
     useContext(MenuContext);
+  const { RESTAURANT } = useContext(AuthContext);
   const { categories } = useContext(CategoryContext);
   const [imagePreview, setImagePreview] = useState(null);
 
@@ -25,7 +27,7 @@ function AddItemModal({ editingItem, setEditingItem, setShowAddModal }) {
       ? {
           name: editingItem.name,
           description: editingItem.description,
-          basePrice: editingItem.basePrice,
+          price: editingItem.price,
           discountedPrice: editingItem.discountedPrice,
           category: editingItem.category?._id || editingItem.category || "",
           isVeg: editingItem.isVeg ? "true" : "false",
@@ -36,7 +38,7 @@ function AddItemModal({ editingItem, setEditingItem, setShowAddModal }) {
       : {
           name: "",
           description: "",
-          basePrice: "",
+          price: "",
           discountedPrice: "",
           category: "",
           isVeg: "true",
@@ -70,7 +72,7 @@ function AddItemModal({ editingItem, setEditingItem, setShowAddModal }) {
     }
   }, [watchImage, editingItem]);
 
-  const onSubmit = async (data) => {
+  const onAddMenu = async (data) => {
     try {
       // Validate variants
       for (let i = 0; i < data.variants.length; i++) {
@@ -96,20 +98,13 @@ function AddItemModal({ editingItem, setEditingItem, setShowAddModal }) {
       formData.append("isVeg", data.isVeg);
       formData.append("isAvailable", data.isAvailable);
       formData.append("isBestSeller", data.isBestSeller);
-
-      // ✅ Convert numbers ONLY here
-      formData.append("basePrice", Number(data.basePrice));
-
-      if (data.discountedPrice !== "") {
-        formData.append("discountedPrice", Number(data.discountedPrice));
-      }
-
+      formData.append("price", data.price);
       formData.append(
         "variants",
         JSON.stringify(
           data.variants.map((v) => ({
             name: v.name,
-            price: Number(v.price),
+            price: v.price,
           }))
         )
       );
@@ -157,7 +152,7 @@ function AddItemModal({ editingItem, setEditingItem, setShowAddModal }) {
           {editingItem ? "Edit Menu Item" : "Add New Menu Item"}
         </h2>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="">
+        <form onSubmit={handleSubmit(onAddMenu)}>
           {errors.root && (
             <p className="text-center text-red-600 bg-red-50 py-2 rounded-lg">
               {errors.root.message}
@@ -214,56 +209,36 @@ function AddItemModal({ editingItem, setEditingItem, setShowAddModal }) {
           </div>
 
           {/* Description */}
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Description
-            </label>
-            <textarea
-              {...register("description")}
-              className="w-full p-3 border border-emerald-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            />
-          </div>
-
-          {/* Prices */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2">
-            {/* Base Price */}
+          {RESTAURANT.hasDescription && (
             <div>
               <label className="block text-sm font-medium mb-2">
-                Base Price (₹)
+                Description
+              </label>
+              <textarea
+                {...register("description")}
+                className="w-full p-3 border border-emerald-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              />
+            </div>
+          )}
+
+          {/* Price */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-2">
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Price (₹)
               </label>
               <input
-                type="number"
-                {...register("basePrice", {
-                  required: "Base price is required",
+                type="text"
+                {...register("price", {
+                  required: "Price is required",
                 })}
                 className={`w-full p-3 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-                  errors.basePrice ? "border-red-500" : "border-emerald-200"
+                  errors.price ? "border-red-500" : "border-emerald-200"
                 }`}
               />
-              {errors.basePrice && (
+              {errors.price && (
                 <p className="text-red-600 text-sm mt-1">
-                  {errors.basePrice.message}
-                </p>
-              )}
-            </div>
-
-            {/* Discounted Price */}
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Discounted Price (₹)
-              </label>
-              <input
-                type="number"
-                {...register("discountedPrice")}
-                className={`w-full p-3 border rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
-                  errors.discountedPrice
-                    ? "border-red-500"
-                    : "border-emerald-200"
-                }`}
-              />
-              {errors.discountedPrice && (
-                <p className="text-red-600 text-sm mt-1">
-                  {errors.discountedPrice.message}
+                  {errors.price.message}
                 </p>
               )}
             </div>
@@ -332,31 +307,35 @@ function AddItemModal({ editingItem, setEditingItem, setShowAddModal }) {
           </label>
 
           {/* Image Upload */}
-          <div className="flex flex-col mb-2">
-            <label className="font-medium text-emerald-800">Upload Image</label>
+          {RESTAURANT.hasPictures && (
+            <div className="flex flex-col mb-2">
+              <label className="font-medium text-emerald-800">
+                Upload Image
+              </label>
 
-            <label className="mt-2 sm:w-50 flex flex-col items-center justify-center border-2 border-dashed border-emerald-600 p-3 rounded-xl cursor-pointer bg-emerald-50 hover:bg-emerald-100 transition-all duration-300">
-              <FaUpload className="text-emerald-600 w-6 h-6 mb-2" />
-              <span className="text-emerald-700 text-sm">
-                Click to upload or drag file
-              </span>
+              <label className="mt-2 sm:w-50 flex flex-col items-center justify-center border-2 border-dashed border-emerald-600 p-3 rounded-xl cursor-pointer bg-emerald-50 hover:bg-emerald-100 transition-all duration-300">
+                <FaUpload className="text-emerald-600 w-6 h-6 mb-2" />
+                <span className="text-emerald-700 text-sm">
+                  Click to upload or drag file
+                </span>
 
-              <input
-                type="file"
-                accept="image/*"
-                {...register("image")}
-                className="hidden"
-              />
-
-              {imagePreview && (
-                <img
-                  src={imagePreview}
-                  alt="preview"
-                  className="mt-4 w-32 h-32 object-cover rounded-xl border border-emerald-300"
+                <input
+                  type="file"
+                  accept="image/*"
+                  {...register("image")}
+                  className="hidden"
                 />
-              )}
-            </label>
-          </div>
+
+                {imagePreview && (
+                  <img
+                    src={imagePreview}
+                    alt="preview"
+                    className="mt-4 w-32 h-32 object-cover rounded-xl border border-emerald-300"
+                  />
+                )}
+              </label>
+            </div>
+          )}
 
           {/* Variants */}
           <div>
@@ -386,7 +365,7 @@ function AddItemModal({ editingItem, setEditingItem, setShowAddModal }) {
                 <div className="w-32">
                   <input
                     placeholder="Price"
-                    type="number"
+                    type="text"
                     {...register(`variants.${index}.price`, {
                       required: "Variant price is required",
                     })}

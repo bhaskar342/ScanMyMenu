@@ -1,4 +1,5 @@
 const Restaurant = require("../models/RestaurantModel");
+const errorResponse = require("../utils/errorResponse");
 
 // ✅ GET Restaurant + User Settings
 exports.getSettings = async (req, res) => {
@@ -24,7 +25,8 @@ exports.getSettings = async (req, res) => {
   }
 };
 // ✅ UPDATE Restaurant + User Settings
-exports.updateSettings = async (req, res) => {
+exports.updateSettings = async (req, res, next) => {
+  console.log("r", req.body);
   try {
     const restaurantId = req.user.restaurantId;
 
@@ -41,7 +43,6 @@ exports.updateSettings = async (req, res) => {
       data: restaurant,
     });
   } catch (error) {
-    console.error("Update settings error:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    return next(new errorResponse(error.message, 500));
   }
 };

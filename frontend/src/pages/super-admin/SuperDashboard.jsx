@@ -1,14 +1,18 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import RestaurantDetailCard from "../../components/superadmin/RestaurantsDetail";
 import { RestaurantContext } from "../../context/SuperAdminContext/RestaurantsContext";
 import { Loader } from "lucide-react";
+import RestaurantLookupForm from "../../components/superadmin/CreateTableForRestaurants";
+import { TableContext } from "../../context/TableAndQrContext";
 
 export default function SuperAdminDashboard() {
-  const { restaurants, isResLoading } = useContext(RestaurantContext);
+  const { restaurants, isResLoading, createTableAndQr } =
+    useContext(RestaurantContext);
   const { signUpUser, isLoading } = useContext(AuthContext);
+  // const {  handleDelete } = useContext(TableContext);
+  const { errorMessage, setErrorMessage } = useState("");
   const {
     register,
     handleSubmit,
@@ -25,6 +29,15 @@ export default function SuperAdminDashboard() {
     }
     if (!result.success) {
       setError("root", { message: result.message });
+    }
+  };
+
+  const onQrSubmit = async (data) => {
+    const result = await createTableAndQr(data);
+    if (result.success) {
+      reset();
+    } else {
+      setErrorMessage(result.message || "Error creating QR");
     }
   };
   return (
@@ -254,6 +267,8 @@ export default function SuperAdminDashboard() {
           </div>
         </div>
       </div>
+
+      <RestaurantLookupForm onSubmitRestaurant={onQrSubmit} />
     </div>
   );
 }

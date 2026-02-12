@@ -23,6 +23,7 @@ const { settingsRoutes } = require("./routes/settingsRoutes");
 const {
   restaurantRoutes,
 } = require("./routes/SuperAdminRoutes/restaurantRoutes");
+const errorHandler = require("./middleware/errorMiddleware");
 
 // app.use(
 //   cors({
@@ -31,10 +32,10 @@ const {
 //   })
 // );
 
-app.use(cors());
-
 // App Routes
+app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use("/api/public", publicRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/category", categoryRoutes);
@@ -44,8 +45,8 @@ app.use("/api/settings", settingsRoutes);
 
 // Super Admin Routes
 app.use("/api/superadmin/restaurants", restaurantRoutes);
-
 app.use("/api/contact", contactMessageRoutes);
+app.use(errorHandler);
 
 // Server Port
 app.listen(PORT, () => {

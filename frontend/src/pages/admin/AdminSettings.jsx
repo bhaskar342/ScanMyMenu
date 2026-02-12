@@ -8,7 +8,6 @@ import {
   FaTimesCircle,
 } from "react-icons/fa";
 import { MdSettings } from "react-icons/md";
-import { HiSparkles } from "react-icons/hi";
 import { SettingContext } from "../../context/SettingsContext";
 
 export default function AdminSettings() {

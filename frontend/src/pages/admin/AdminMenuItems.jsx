@@ -14,17 +14,15 @@ import FoodCatSkeleton from "../../components/FoodCatSkeleton";
 import ErrorModal from "../../components/ErrorModal";
 
 export default function AdminMenuItems() {
-  const { token } = useContext(AuthContext);
+  const { token, RESTAURANT } = useContext(AuthContext);
   const [editingItem, setEditingItem] = useState(null);
   const [editingCategory, setEditingCategory] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showCatAddModal, setShowCatAddModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [errorMessage, setErrorMessage] = useState("");
-
-  const { isMenuLoading, updateMenuItem, handleDelete, menuItems } =
+  const { updateMenuItem, handleDelete, isMenuLoading, menuItems } =
     useContext(MenuContext);
-
   const { categories, getAllCategories, handleDeleteCategory, isCatLoading } =
     useContext(CategoryContext);
 
@@ -37,12 +35,12 @@ export default function AdminMenuItems() {
   //-----------------------------------------------------------------------
   // MENU ITEMS HANDLERS
   //-----------------------------------------------------------------------
-  const toggleAvailability = async (id, value) => {
+  const toggleAvailability = async (item) => {
     const fd = new FormData();
-    fd.append("isAvailable", value ? "true" : "false");
-    return await updateMenuItem(id, fd);
-  };
+    fd.append("isAvailable", (!item.isAvailable).toString());
 
+    return await updateMenuItem(item._id, fd);
+  };
   const onEdit = (item) => {
     setEditingItem(item);
     setShowAddModal(true);
@@ -70,7 +68,6 @@ export default function AdminMenuItems() {
     }
   };
   const { resCurrency } = useContext(AuthContext);
-  "Currency in MenuItemCard:", resCurrency;
 
   return (
     <div className="container-fluid">

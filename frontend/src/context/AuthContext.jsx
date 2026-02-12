@@ -90,6 +90,7 @@ export const AuthProvider = ({ children }) => {
         const restaurant = res.restaurant;
         localStorage.setItem("authToken", token);
         localStorage.setItem("restaurant", JSON.stringify(restaurant));
+
         setToken(token);
         setRestaurant(restaurant);
         setAuthenticated(true);
@@ -113,7 +114,6 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem("authToken");
     localStorage.removeItem("restaurant");
-    ("User logged out");
   };
 
   // ✅ Automatically log out when token expires (runs every minute)
@@ -130,12 +130,14 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
+  const RESTAURANT = JSON.parse(localStorage.getItem("restaurant"));
   return (
     <AuthContext.Provider
       value={{
         loginUser,
         signUpUser,
         logout,
+        RESTAURANT,
         resCurrency,
         isLoading,
         authenticated,

@@ -1,4 +1,6 @@
+import { useState } from "react";
 import CategoryCard from "./CategoryCard";
+import ConfirmModal from "../ConfirmationModal";
 
 export default function CategoryList({
   categories,
@@ -7,6 +9,8 @@ export default function CategoryList({
   selectedCategory,
   setSelectedCategory,
 }) {
+  const [confirmMessage, setConfirmMessage] = useState("");
+  const [confirmAction, setConfirmAction] = useState(null);
   return (
     <div className="w-full overflow-x-auto p-2 sm:overflow-x-hidden">
       <div className="flex flex-row sm:flex-col gap-3">
@@ -56,13 +60,30 @@ export default function CategoryList({
               key={cat._id}
               category={cat}
               onEdit={onEdit}
-              onDelete={onDelete}
+              onDelete={(id) => {
+                setConfirmMessage(
+                  "Are you sure you want to delete this category?"
+                );
+                setConfirmAction(() => () => onDelete(id));
+              }}
               selectedCategory={selectedCategory}
               setSelectedCategory={setSelectedCategory}
             />
           ))
         )}
       </div>
+      <ConfirmModal
+        message={confirmMessage}
+        onCancel={() => {
+          setConfirmMessage("");
+          setConfirmAction(null);
+        }}
+        onConfirm={() => {
+          confirmAction?.();
+          setConfirmMessage("");
+          setConfirmAction(null);
+        }}
+      />
     </div>
   );
 }

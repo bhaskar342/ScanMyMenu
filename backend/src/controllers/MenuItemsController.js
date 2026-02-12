@@ -1,52 +1,51 @@
 const MenuItem = require("../models/MenuItemModel");
 const Category = require("../models/FoodCategoryModel");
-const fs = require("fs");
 const cloudinary = require("../config/cloudinaryConfig");
-const generateInitialsImage = require("../utils/generateInitialsImage");
+const RestaurantModel = require("../models/RestaurantModel");
+const { uploadMenuImage } = require("../utils/imageService");
 
-// ✅ Helper: Get initials
-function getInitials(name = "") {
-  return name
-    .split(" ")
-    .map((w) => w[0]?.toUpperCase())
-    .join("")
-    .slice(0, 2);
-}
-
-exports.postAddMenuItems = async (req, res) => {
+exports.addMenuItem = async (req, res) => {
   try {
+    const body = req.body || {};
+
+    const restaurant = await RestaurantModel.findById(req.user.restaurantId);
+    if (!restaurant)
+      return res.status(404).json({
+        success: false,
+        message: "Restaurant not found",
+      });
+
     let {
       name,
       description,
-      basePrice,
-      discountedPrice,
       category,
-      variants,
+      price,
       isVeg,
       isAvailable,
       isBestSeller,
-    } = req.body;
+      variants,
+    } = body;
 
-    if (!name) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Name is required" });
-    }
+    // ---------- REQUIRED FIELD ----------
+    if (!name)
+      return res.status(400).json({
+        success: false,
+        message: "Name required",
+      });
 
-    // ✅ Validate category belongs to this restaurant
+    // ---------- CATEGORY VALIDATION ----------
     const validCategory = await Category.findOne({
       _id: category,
       restaurantId: req.user.restaurantId,
     });
 
-    if (!validCategory) {
+    if (!validCategory)
       return res.status(400).json({
         success: false,
         message: "Invalid category. Create the category first.",
       });
-    }
 
-    // ✅ Parse variants JSON
+    // ---------- VARIANTS SAFE PARSE ----------
     if (variants && typeof variants === "string") {
       try {
         variants = JSON.parse(variants);
@@ -60,58 +59,43 @@ exports.postAddMenuItems = async (req, res) => {
 
     if (!Array.isArray(variants)) variants = [];
 
-    let imageUrl = null;
-    let imagePublicId = null;
+    // ---------- NORMALIZE DATA ----------
+    price = price ? Number(price) : null;
+    isVeg = isVeg === true || isVeg === "true";
+    isAvailable = isAvailable === true || isAvailable === "true";
+    isBestSeller = isBestSeller === true || isBestSeller === "true";
 
-    // ✅ A. If image is uploaded → upload to Cloudinary
-    if (req.file) {
-      const upload = await cloudinary.uploader.upload(req.file.path, {
-        folder: `digithali/${req.user.restaurantId}/menu`,
+    // ---------- IMAGE RULE ----------
+    let imageData = {};
+
+    if (restaurant.hasPictures) {
+      imageData = await uploadMenuImage({
+        file: req.file,
+        name,
+        restaurantId: restaurant._id,
       });
-
-      imageUrl = upload.secure_url;
-      imagePublicId = upload.public_id;
-
-      fs.unlink(req.file.path, () => {});
-    } else {
-      // generate initials
-      const initials = getInitials(name);
-      // create avatar
-      const localPath = generateInitialsImage(initials);
-
-      // upload to Cloudinary
-      const upload = await cloudinary.uploader.upload(localPath, {
-        folder: `scanmymenu/${req.user.restaurantId}/menu`,
-      });
-
-      imageUrl = upload.secure_url;
-      imagePublicId = upload.public_id;
-
-      fs.unlink(localPath, () => {});
     }
-
-    // ✅ Create menu item
+    // ---------- CREATE ITEM ----------
     const newItem = await MenuItem.create({
-      restaurantId: req.user.restaurantId,
+      restaurantId: restaurant._id,
       name,
       description: description || "",
-      basePrice: basePrice ? Number(basePrice) : null,
       category,
+      price,
+      isVeg,
+      isAvailable,
+      isBestSeller,
       variants,
-      discountedPrice,
-      isVeg: isVeg === "false" ? false : true,
-      isAvailable: isAvailable === "false" ? false : true,
-      isBestSeller: isBestSeller === "true" || false,
-      imageUrl,
-      imagePublicId,
+      ...imageData,
     });
-    return res.status(201).json({
+
+    res.status(201).json({
       success: true,
       menuItem: newItem,
     });
   } catch (err) {
-    console.error("Add menu item error:", err);
-    return res.status(500).json({
+    console.error("Add Menu Item Error:", err);
+    res.status(500).json({
       success: false,
       message: "Server error",
       error: err.message,
@@ -119,11 +103,10 @@ exports.postAddMenuItems = async (req, res) => {
   }
 };
 
-// ✅ No changes required below — update & delete will continue to work normally
 exports.getAllMenuItems = async (req, res) => {
   try {
     const restaurantId = req.user.restaurantId; // MUST be correct
-    
+
     const items = await MenuItem.find({ restaurantId })
       .populate("category")
       .lean();
@@ -164,73 +147,117 @@ exports.deleteMenu = async (req, res) => {
 
 exports.updateMenuItem = async (req, res) => {
   try {
+    const body = req.body || {};
     const { id } = req.params;
 
-    let item = await MenuItem.findOne({
+    // ---------- FIND RESTAURANT ----------
+    const restaurant = await RestaurantModel.findById(req.user.restaurantId);
+    if (!restaurant)
+      return res.status(404).json({
+        success: false,
+        message: "Restaurant not found",
+      });
+
+    // ---------- FIND ITEM ----------
+    const item = await MenuItem.findOne({
       _id: id,
       restaurantId: req.user.restaurantId,
     });
 
     if (!item)
-      return res
-        .status(404)
-        .json({ success: false, message: "Menu item not found" });
+      return res.status(404).json({
+        success: false,
+        message: "Menu item not found",
+      });
 
     let {
       name,
       description,
-      basePrice,
       category,
-      discountedPrice,
-      variants,
+      price,
       isVeg,
       isAvailable,
       isBestSeller,
-    } = req.body;
+      variants,
+    } = body;
 
-    // ✅ Parse variants JSON
+    // ---------- CATEGORY VALIDATION ----------
+    if (category) {
+      const validCategory = await Category.findOne({
+        _id: category,
+        restaurantId: req.user.restaurantId,
+      });
+
+      if (!validCategory)
+        return res.status(400).json({
+          success: false,
+          message: "Invalid category",
+        });
+
+      item.category = category;
+    }
+
+    // ---------- VARIANTS SAFE PARSE ----------
     if (variants && typeof variants === "string") {
       try {
         variants = JSON.parse(variants);
       } catch {
         return res.status(400).json({
           success: false,
-          message: "Invalid JSON in variants",
+          message: "Invalid JSON format for variants",
         });
       }
     }
 
-    if (name) item.name = name;
-    if (description) item.description = description;
-    if (basePrice) item.basePrice = Number(basePrice);
-    if (discountedPrice) item.discountedPrice = Number(discountedPrice);
-    if (variants) item.variants = variants;
-    if (category) item.category = category;
-    if (isVeg !== undefined) item.isVeg = isVeg === "true";
-    if (isAvailable !== undefined) item.isAvailable = isAvailable === "true";
-    if (isBestSeller !== undefined) item.isBestSeller = isBestSeller === "true";
+    // ---------- APPLY FIELD UPDATES ----------
+    if (name !== undefined) item.name = name;
+    if (description !== undefined) item.description = description;
+    if (price !== undefined) item.price = price ? Number(price) : null;
+    if (Array.isArray(variants)) item.variants = variants;
 
-    // ✅ New uploaded image → replace Cloudinary image
-    if (req.file) {
+    if (isVeg !== undefined)
+      item.isVeg = isVeg === true || isVeg === "true";
+
+    if (isAvailable !== undefined)
+      item.isAvailable = isAvailable === true || isAvailable === "true";
+
+    if (isBestSeller !== undefined)
+      item.isBestSeller = isBestSeller === true || isBestSeller === "true";
+
+    // ---------- IMAGE RULE ----------
+    if (restaurant.hasPictures) {
+      // If new image uploaded → replace
+      if (req.file) {
+        if (item.imagePublicId) {
+          await cloudinary.uploader.destroy(item.imagePublicId);
+        }
+
+        const imageData = await uploadMenuImage({
+          file: req.file,
+          name: item.name,
+          restaurantId: restaurant._id,
+        });
+
+        item.imageUrl = imageData.imageUrl;
+        item.imagePublicId = imageData.imagePublicId;
+      }
+    } else {
+      // Restaurant disabled pictures → remove old images
       if (item.imagePublicId) {
         await cloudinary.uploader.destroy(item.imagePublicId);
+        item.imageUrl = undefined;
+        item.imagePublicId = undefined;
       }
-
-      const upload = await cloudinary.uploader.upload(req.file.path, {
-        folder: `digithali/${req.user.restaurantId}/menu`,
-      });
-
-      item.imageUrl = upload.secure_url;
-      item.imagePublicId = upload.public_id;
-
-      fs.unlink(req.file.path, () => {});
     }
 
     await item.save();
 
-    res.json({ success: true, updatedItem: item });
+    res.json({
+      success: true,
+      updatedItem: item,
+    });
   } catch (err) {
-    console.error("Update Menu Error:", err);
+    console.error("Update Menu Item Error:", err);
     res.status(500).json({
       success: false,
       message: "Server error",

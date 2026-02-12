@@ -10,8 +10,9 @@ menuItemRoutes.post(
   verifyToken,
   authorizeRoles("admin"),
   upload.single("image"),
-  menuItemsController.postAddMenuItems
+  menuItemsController.addMenuItem
 );
+
 menuItemRoutes.get(
   "/items",
   verifyToken,
@@ -26,7 +27,7 @@ menuItemRoutes.delete(
 );
 
 menuItemRoutes.put(
-  "/:id",
+  "/update/:id",
   verifyToken,
   authorizeRoles("admin"),
   upload.single("image"),

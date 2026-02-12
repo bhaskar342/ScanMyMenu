@@ -20,8 +20,7 @@ const menuItemSchema = new mongoose.Schema({
     index: true,
   },
   description: { type: String },
-  basePrice: { type: Number },
-  discountedPrice: { type: Number },
+  price: { type: String },
   category: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "FoodCategory",

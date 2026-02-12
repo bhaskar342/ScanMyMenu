@@ -16,6 +16,8 @@ const restaurantSchema = new mongoose.Schema({
   password: { type: String, required: true },
   isActive: { type: Boolean, default: true },
   isOpen: { type: Boolean, default: true },
+  hasPictures: { type: Boolean, default: true },
+  hasDescription: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 

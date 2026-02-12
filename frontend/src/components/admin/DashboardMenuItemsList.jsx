@@ -73,7 +73,7 @@ export function DashboardMenuItemsList({ menuItems = [] }) {
 
                   <div className="flex items-center gap-3">
                     <span className="text-emerald-700 font-bold text-base sm:text-lg">
-                      ₹{item.basePrice}
+                      ₹{item.price}
                     </span>
                     <span className="text-xs text-gray-400">•</span>
                     <span className="text-xs text-gray-500">

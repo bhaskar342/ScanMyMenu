@@ -61,14 +61,14 @@ export default function CustomerMenu() {
       const variant = item.variants[selectedIndex];
 
       return {
-        basePrice: variant.basePrice ?? variant.price ?? null,
+        price: variant.price ?? variant.price ?? null,
         discountedPrice: variant.discountedPrice ?? null,
       };
     }
 
     // CASE 2: No variants
     return {
-      basePrice: item.basePrice ?? null,
+      price: item.price ?? null,
       discountedPrice: item.discountedPrice ?? null,
     };
   };
@@ -302,25 +302,25 @@ export default function CustomerMenu() {
                                 <span className="text-2xl sm:text-3xl font-bold text-emerald-600">
                                   {currency}
                                   {displayPrice.discountedPrice ??
-                                    displayPrice.basePrice ??
+                                    displayPrice.price ??
                                     "—"}
                                 </span>
                                 {/* Discount Badge - shown only when discounted */}
                                 {displayPrice.discountedPrice != null &&
-                                  displayPrice.basePrice != null &&
+                                  displayPrice.price != null &&
                                   displayPrice.discountedPrice !==
-                                    displayPrice.basePrice && (
+                                    displayPrice.price && (
                                     <>
                                       <span className="text-sm text-gray-400 line-through">
                                         {currency}
-                                        {displayPrice.basePrice}
+                                        {displayPrice.price}
                                       </span>
 
                                       <div className="absolute bottom-0 right-0 bg-emerald-50 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full w-fit">
                                         {Math.round(
-                                          ((displayPrice.basePrice -
+                                          ((displayPrice.price -
                                             displayPrice.discountedPrice) /
-                                            displayPrice.basePrice) *
+                                            displayPrice.price) *
                                             100
                                         )}
                                         % OFF

@@ -12,20 +12,16 @@ export default function ItemDetailModal({
   const hasVariants = item.variants && item.variants.length > 0;
   const variant = hasVariants && item.variants[selectedVariantIndex || 0];
 
-  const basePrice = hasVariants
-    ? variant?.basePrice ?? variant?.price
-    : item.basePrice;
+  const price = hasVariants ? variant?.price ?? variant?.price : item.price;
 
   const discountedPrice = hasVariants
     ? variant?.discountedPrice
     : item.discountedPrice;
 
   const hasDiscount =
-    discountedPrice != null &&
-    basePrice != null &&
-    discountedPrice !== basePrice;
+    discountedPrice != null && price != null && discountedPrice !== price;
   const discountPercentage = hasDiscount
-    ? Math.round(((basePrice - discountedPrice) / basePrice) * 100)
+    ? Math.round(((price - discountedPrice) / price) * 100)
     : 0;
 
   return (
@@ -99,7 +95,6 @@ export default function ItemDetailModal({
                 <span className="text-xs font-bold">Bestseller</span>
               </div>
             )}
-
           </div>
         </div>
 
@@ -131,9 +126,9 @@ export default function ItemDetailModal({
                   {item.variants.map((v, index) => {
                     const isSelected = index === selectedVariantIndex;
                     const vPrice =
-                      v.discountedPrice && v.basePrice !== v.discountedPrice
+                      v.discountedPrice && v.price !== v.discountedPrice
                         ? v.discountedPrice
-                        : v.basePrice ?? v.price;
+                        : v.price ?? v.price;
 
                     return (
                       <button
@@ -176,24 +171,23 @@ export default function ItemDetailModal({
                   <div className="flex items-end gap-3">
                     <span className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                       {currency}
-                      {discountedPrice ?? basePrice}
+                      {discountedPrice ?? price}
                     </span>
 
                     {hasDiscount && (
                       <span className="text-lg text-gray-400 line-through mb-1">
                         {currency}
-                        {basePrice}
+                        {price}
                       </span>
                     )}
                   </div>
                   {hasDiscount && (
                     <p className="text-xs text-emerald-600 font-semibold mt-1">
                       You save {currency}
-                      {basePrice - discountedPrice}!
+                      {price - discountedPrice}!
                     </p>
                   )}
                 </div>
-
               </div>
             </div>
           </div>

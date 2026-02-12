@@ -21,7 +21,7 @@ function AdminQrCode() {
     formState: { errors, isSubmitting },
   } = useForm();
 
-  const { createTableAndQr, handleDownload, handleDelete, tables, isLoading } =
+  const { handleDownload, handleDelete, tables, isLoading } =
     useContext(TableContext);
   tables;
   const onSubmit = async (data) => {
@@ -80,14 +80,6 @@ function AdminQrCode() {
             </p>
           </div>
         </div>
-
-        <button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2.5 rounded-xl shadow-md transition-all"
-        >
-          <FaQrcode />
-          Generate QR
-        </button>
       </div>
 
       {/* STATS */}

@@ -1,11 +1,14 @@
 import React from "react";
 import MenuItemCard from "./MenuItemCard";
+import { useState } from "react";
+import ConfirmModal from "../ConfirmationModal";
 
 export default function MenuItemList({
   menuItems,
   categories,
   onEdit,
   onDelete,
+  resCurrency,
   toggleAvailability,
   selectedCategory,
 }) {
@@ -36,6 +39,8 @@ export default function MenuItemList({
     );
   }
 
+  const [confirmMessage, setConfirmMessage] = useState("");
+  const [confirmAction, setConfirmAction] = useState(null);
   return (
     <>
       {visibleCategories.map((cat) => (
@@ -62,13 +67,31 @@ export default function MenuItemList({
                 key={item._id}
                 item={item}
                 onEdit={onEdit}
-                onDelete={onDelete}
+                resCurrency={resCurrency}
+                onDelete={(id) => {
+                  setConfirmMessage(
+                    "Are you sure you want to delete this menu item?"
+                  );
+                  setConfirmAction(() => () => onDelete(id));
+                }}
                 toggleAvailability={toggleAvailability}
               />
             ))}
           </div>
         </div>
       ))}
+      <ConfirmModal
+        message={confirmMessage}
+        onCancel={() => {
+          setConfirmMessage("");
+          setConfirmAction(null);
+        }}
+        onConfirm={() => {
+          confirmAction?.();
+          setConfirmMessage("");
+          setConfirmAction(null);
+        }}
+      />
     </>
   );
 }

@@ -11,8 +11,7 @@ const BASE_URL = process.env.BASE_URL;
 // ===================================================================
 exports.postAddTable = async (req, res) => {
   try {
-    const restaurantId = req.user.restaurantId;
-    const { name } = req.body;
+    const { restaurantId, name } = req.body;
 
     if (!name) {
       return res.status(400).json({

@@ -1,4 +1,8 @@
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+
 export default function SkeletonLoader({ count = 7 }) {
+  const { RESTAURANT } = useContext(AuthContext);
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       {Array.from({ length: count }).map((_, i) => (
@@ -7,13 +11,15 @@ export default function SkeletonLoader({ count = 7 }) {
           className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-lg animate-pulse"
         >
           {/* Image Skeleton */}
-          <div className="relative h-40 sm:h-56 bg-gray-200">
-            {/* Veg / Non-Veg Badge */}
-            <div className="absolute top-3 left-3 w-6 h-6 rounded-lg bg-gray-300" />
+          {RESTAURANT.hasPictures && (
+            <div className="relative h-40 sm:h-56 bg-gray-200">
+              {/* Veg / Non-Veg Badge */}
+              <div className="absolute top-3 left-3 w-6 h-6 rounded-lg bg-gray-300" />
 
-            {/* Availability Overlay */}
-            <div className="absolute inset-0 bg-black/10" />
-          </div>
+              {/* Availability Overlay */}
+              <div className="absolute inset-0 bg-black/10" />
+            </div>
+          )}
 
           {/* Content Skeleton */}
           <div className="p-2.5 sm:p-3 space-y-3">

@@ -7,44 +7,6 @@ export const TableProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [tables, setTables] = useState([]);
   const { token } = useContext(AuthContext);
-  const formatName = (name) => {
-    if (!name) return "";
-    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-  };
-
-  const createTableAndQr = async (data) => {
-    data.name = formatName(data.name);
-    try {
-      setIsLoading(true);
-      const res = await fetch(`${BASE_API}/api/table/create`, {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const result = await res.json();
-      if (result.success) {
-        await getAllTables();
-        return { success: true };
-      } else {
-        return {
-          success: false,
-          message: result.message || "Error creating table",
-        };
-      }
-    } catch (err) {
-      console.error("Server error", err);
-      return {
-        success: false,
-        message: result.message || "Table creation failed",
-      };
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const getAllTables = async () => {
     try {
@@ -128,7 +90,6 @@ export const TableProvider = ({ children }) => {
   return (
     <TableContext.Provider
       value={{
-        createTableAndQr,
         getAllTables,
         handleDelete,
         handleDownload,
